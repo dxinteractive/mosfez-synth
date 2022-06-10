@@ -2,6 +2,8 @@
 
 A microtonal-aware synth engine library for web.
 
+**[Play the demo!](https://dxinteractive.github.io/mosfez-xen-synth/)** (although it does not work yet)
+
 **It's being built right now so it's probaby not finished and probably doesn't work or have fixed API or anything.**
 
 ## Development
