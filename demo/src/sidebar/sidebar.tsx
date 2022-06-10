@@ -5,16 +5,18 @@ import { appState } from "../data/app-state";
 import { Controls } from "./sidebar-controls";
 import { Console } from "./sidebar-console";
 import { Link } from "./link";
+import { Drawer } from "./drawer";
 
 export function Sidebar() {
-  const sidebarOpen = appState.branch("sidebarOpen").useValue();
+  const sidebar = appState.branch("sidebar");
+  const sidebarOpen = sidebar.branch("open").useValue();
 
   if (!sidebarOpen) {
     return (
       <div className={clsx(classes.sidebar, classes.closed)}>
         <div className={classes.sideways}>
           <div className={classes.sidewaysInner}>
-            <Link onClick={() => appState.branch("sidebarOpen").set(true)}>
+            <Link onClick={() => sidebar.branch("open").set(true)}>
               [open settings]
             </Link>
           </div>
@@ -29,12 +31,14 @@ export function Sidebar() {
         <div className={classes.sidebarHeading}>
           <h1>mosfez-xen-synth demo</h1>
         </div>
-        <Link onClick={() => appState.branch("sidebarOpen").set(false)}>
-          [close]
-        </Link>
+        <Link onClick={() => sidebar.branch("open").set(false)}>[close]</Link>
       </div>
-      <Controls />
-      <Console />
+      <Drawer label="Surface settings" state={sidebar.branch("surfaceOpen")}>
+        <Controls />
+      </Drawer>
+      <Drawer label="Debug console" state={sidebar.branch("consoleOpen")}>
+        <Console />
+      </Drawer>
     </div>
   );
 }

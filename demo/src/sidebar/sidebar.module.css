@@ -4,7 +4,6 @@
   right: 0;
   height: 100vh;
   background-color: var(--colorBack2);
-  padding: 0 1rem;
 }
 
 .open {
@@ -14,6 +13,7 @@
 
 .closed {
   width: 2.5rem;
+  padding-top: 2rem;
 }
 
 .sideways {

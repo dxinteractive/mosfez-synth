@@ -82,6 +82,8 @@ h6 {
   --colorText2: rgb(34, 206, 206);
   --colorBack: rgb(14, 21, 27);
   --colorBack2: rgb(24, 35, 45);
+  --colorBack3: rgb(32, 48, 64);
+  --colorBack4: rgb(41, 62, 83);
 
   --colorButtonBack: #333344;
   --colorButtonBackHover: #3d3d58;

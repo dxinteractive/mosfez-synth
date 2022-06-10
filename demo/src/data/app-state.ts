@@ -6,9 +6,15 @@ export type SurfaceState = {
   rootPositionY: number;
 };
 
+export type SidebarState = {
+  open: boolean;
+  surfaceOpen: boolean;
+  consoleOpen: boolean;
+};
+
 export type AppState = {
-  sidebarOpen: boolean;
   surface: SurfaceState;
+  sidebar: SidebarState;
 };
 
 const stateFromStorage: AppState = JSON.parse(
@@ -16,11 +22,15 @@ const stateFromStorage: AppState = JSON.parse(
 );
 
 export const defaultState: AppState = {
-  sidebarOpen: true,
   surface: {
     keySize: 40,
     rootPositionX: 0.2,
     rootPositionY: 0.8,
+  },
+  sidebar: {
+    open: false,
+    surfaceOpen: true,
+    consoleOpen: false,
   },
 };
 
@@ -30,6 +40,10 @@ export const appState = new Dendriform<AppState>({
   surface: {
     ...defaultState.surface,
     ...(stateFromStorage.surface ?? {}),
+  },
+  sidebar: {
+    ...defaultState.sidebar,
+    ...(stateFromStorage.sidebar ?? {}),
   },
 });
 
