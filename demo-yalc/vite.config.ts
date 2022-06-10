@@ -6,7 +6,7 @@ import path from "path";
 export default defineConfig({
   resolve: {
     alias: {
-      "mosfez-xen-synth": path.resolve(__dirname, "../src"),
+      "mosfez-xen-synth-dev": path.resolve(__dirname, "../src"),
     },
   },
   plugins: [react()],
