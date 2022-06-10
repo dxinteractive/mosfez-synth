@@ -137,6 +137,6 @@ input {
   background: var(--colorBack);
   border: 1px solid var(--colorBack2);
   color: var(--colorText);
-  padding: .3rem;
+  padding: .3rem .6rem;
   width: 100%;
 }

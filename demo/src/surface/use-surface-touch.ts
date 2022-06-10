@@ -107,9 +107,8 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
       });
     };
 
-    const mouseEnd = (e: MouseEvent) => {
+    const mouseEnd = () => {
       mouseDown = false;
-      e.preventDefault();
       const [x, y] = lastPos;
 
       onSurfaceEvent({

@@ -44,6 +44,18 @@ export function Controls() {
           );
         })}
       </FieldRow>
+      <FieldRow label="step size up">
+        {surface.render("stepSizeY", (stepSizeYForm) => {
+          const [asString] = useNumberToString(stepSizeYForm);
+          return <input type="number" step="1" {...useInput(asString)} />;
+        })}
+      </FieldRow>
+      <FieldRow label="step size right">
+        {surface.render("stepSizeX", (stepSizeXForm) => {
+          const [asString] = useNumberToString(stepSizeXForm);
+          return <input type="number" step="1" {...useInput(asString)} />;
+        })}
+      </FieldRow>
     </div>
   );
 }

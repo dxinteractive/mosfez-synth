@@ -4,6 +4,8 @@ export type SurfaceState = {
   keySize: number;
   rootPositionX: number;
   rootPositionY: number;
+  stepSizeX: number;
+  stepSizeY: number;
 };
 
 export type SidebarState = {
@@ -12,9 +14,15 @@ export type SidebarState = {
   consoleOpen: boolean;
 };
 
+export type TuningState = {
+  rootHz: number;
+  scaleSize: number;
+};
+
 export type AppState = {
   surface: SurfaceState;
   sidebar: SidebarState;
+  tuning: TuningState;
 };
 
 const stateFromStorage: AppState = JSON.parse(
@@ -26,11 +34,17 @@ export const defaultState: AppState = {
     keySize: 40,
     rootPositionX: 0.2,
     rootPositionY: 0.8,
+    stepSizeX: 1,
+    stepSizeY: 5,
   },
   sidebar: {
     open: false,
     surfaceOpen: true,
     consoleOpen: false,
+  },
+  tuning: {
+    rootHz: 440,
+    scaleSize: 12,
   },
 };
 
@@ -44,6 +58,10 @@ export const appState = new Dendriform<AppState>({
   sidebar: {
     ...defaultState.sidebar,
     ...(stateFromStorage.sidebar ?? {}),
+  },
+  tuning: {
+    ...defaultState.tuning,
+    ...(stateFromStorage.tuning ?? {}),
   },
 });
 
