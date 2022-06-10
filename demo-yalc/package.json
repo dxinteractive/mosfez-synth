@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "mosfez-xen-synth": "file:.yalc/mosfez-xen-synth",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
