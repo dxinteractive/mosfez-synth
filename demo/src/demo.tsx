@@ -3,11 +3,10 @@ import ReactDOM from "react-dom/client";
 import "./css/base.css";
 import classes from "./demo.module.css";
 
-// import thing from "mosfez-xen-synth";
-// import other from "mosfez-xen-synth/other";
-
 import { Sidebar } from "./sidebar/sidebar";
-import { Surface } from "./surface/surface";
+import { Surface, SurfaceNoteEvent } from "./surface/surface";
+
+// import MosfezXenSynth from "mosfez-xen-synth/v1";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -16,10 +15,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>
 );
 
+// const synth = new MosfezXenSynth();
+
+const handleSurfaceEvent = (e: SurfaceNoteEvent) => {
+  console.log("surface event", e);
+  // convert to decimal midi
+  // synth.noteOn(); / synth.noteOff();
+};
+
 function Demo() {
   return (
     <div className={classes.demo}>
-      <Surface />
+      <Surface onSurfaceNoteEvent={handleSurfaceEvent} />
       <Sidebar />
     </div>
   );

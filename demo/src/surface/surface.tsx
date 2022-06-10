@@ -1,6 +1,6 @@
 import classes from "./surface.module.css";
 import clsx from "clsx";
-import { useState } from "react";
+import { useCallback } from "react";
 import { useWindowSize } from "@react-hook/window-size/throttled";
 
 import { appState, SurfaceState } from "../data/app-state";
@@ -10,36 +10,80 @@ import {
   getWorldWindowBounds,
   Vec2,
 } from "./surface-transform";
-import { SurfaceEvent, useSurfaceTouch } from "./use-surface-touch";
+import { useSurfaceTouch } from "./use-surface-touch";
+import type { SurfaceEvent, SurfaceEventType } from "./use-surface-touch";
 import { appConsole } from "../data/console";
 import { useRef } from "react";
 
-export function Surface() {
+function coordToNote(x: number, y: number): number {
+  const { stepSizeX, stepSizeY } = appState.value.surface;
+  return -Math.round(y) * stepSizeY + Math.round(x) * stepSizeX;
+}
+
+export type SurfaceNoteEvent = {
+  type: SurfaceEventType;
+  id: number;
+  note: number;
+  force: number;
+};
+
+export type SurfaceProps = {
+  onSurfaceNoteEvent?: (e: SurfaceNoteEvent) => void;
+};
+
+export function Surface(props: SurfaceProps) {
+  const { onSurfaceNoteEvent } = props;
+
   const windowSize = useWindowSize() as Vec2;
   const surface = appState.branch("surface").useValue();
+  const scaleSize = appState.branch(["tuning", "scaleSize"]).useValue();
 
   const windowSizeRef = useRef<Vec2>(windowSize);
   const surfaceRef = useRef<SurfaceState>(surface);
   windowSizeRef.current = windowSize;
   surfaceRef.current = surface;
 
-  const [handleSurfaceEvent] = useState(() => (e: SurfaceEvent) => {
-    const { type, id, force } = e;
-    const windowSize = windowSizeRef.current;
-    const surface = surfaceRef.current;
-    const [x, y] = screenToWorld(surface, windowSize, [e.x, e.y]);
+  const handleSurfaceEvent = useCallback(
+    (e: SurfaceEvent) => {
+      if (!onSurfaceNoteEvent) return;
 
-    let text = `${type} id:${id} at [${x.toPrecision(3)}, ${y.toPrecision(3)}]`;
-    text += `\n force is ${force}`;
+      // transform surface event into world space
+      const { type, id, force } = e;
+      const coord = [e.x, e.y] as Vec2;
+      const [x, y] = screenToWorld(
+        surfaceRef.current,
+        windowSizeRef.current,
+        coord
+      );
 
-    if (type === "start") {
-      appConsole.warn(text);
-    } else if (type === "move") {
-      appConsole.log(text);
-    } else if (type === "end") {
-      appConsole.error(text);
-    }
-  });
+      // turn that into a note number
+      const note = coordToNote(x, y);
+
+      // log stuff of interest
+      let text = `${type} id:${id} at [${x.toPrecision(3)}, ${y.toPrecision(
+        3
+      )}]`;
+      text += `\n note is ${note}`;
+      text += `\n force is ${force}`;
+
+      if (type === "start") {
+        appConsole.warn(text);
+      } else if (type === "move") {
+        appConsole.log(text);
+      } else if (type === "end") {
+        appConsole.error(text);
+      }
+
+      // send event up
+      onSurfaceNoteEvent({
+        ...e,
+        x,
+        y,
+        note,
+      });
+    },
+    [onSurfaceNoteEvent]
+  );
 
   const ref = useSurfaceTouch(handleSurfaceEvent);
 
@@ -57,13 +101,17 @@ export function Surface() {
         windowSize,
         coord
       );
+
+      // BAD HARDCODED 12!
+      const isRoot = coordToNote(x, y) % scaleSize === 0;
+
       cells.push(
         <Cell
           key={`${x},${y}`}
           keySize={surface.keySize}
           x={transformedX}
           y={transformedY}
-          isRoot={x === 0 && y === 0}
+          isRoot={isRoot}
         />
       );
     }
