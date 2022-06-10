@@ -1,0 +1,16 @@
+.line {
+  white-space: pre;
+  overflow: hidden;
+} 
+
+.log {
+  color: var(--colorConsoleLog);
+}
+
+.warn {
+  color: var(--colorConsoleWarn);
+}
+
+.error {
+  color: var(--colorConsoleError);
+}

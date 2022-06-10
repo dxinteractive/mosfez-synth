@@ -4,10 +4,13 @@ import clsx from "clsx";
 import { useWindowSize } from "@react-hook/window-size/throttled";
 import { appState } from "../data/app-state";
 import { worldToScreen, getWorldWindowBounds, Vec2 } from "./surface-transform";
+import { useSurfaceTouch } from "./use-surface-touch";
 
 export function Surface() {
   const windowSize = useWindowSize() as Vec2;
   const surface = appState.branch("surface").useValue();
+
+  const surfaceRef = useSurfaceTouch();
 
   const [[xmin, xmax], [ymin, ymax]] = getWorldWindowBounds(
     surface,
@@ -35,7 +38,11 @@ export function Surface() {
     }
   }
 
-  return <div className={classes.surface}>{cells}</div>;
+  return (
+    <div className={classes.surface} ref={surfaceRef}>
+      {cells}
+    </div>
+  );
 }
 
 type CellProps = {
