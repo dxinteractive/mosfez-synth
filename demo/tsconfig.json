@@ -14,8 +14,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "mosfez-xen-synth-dev": ["../src/index"],
+      "mosfez-xen-synth-dev/*": ["../src/*"]
+    }
   },
-  "include": ["src"],
+  "include": ["src", "../src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

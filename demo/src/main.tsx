@@ -6,7 +6,9 @@ import classes from "./main.module.css";
 import thing from "mosfez-xen-synth";
 import other from "mosfez-xen-synth/other";
 
-console.log(thing(), other());
+import thingCompiledLive from "mosfez-xen-synth-dev";
+
+console.log(thing(), other(), thingCompiledLive());
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById("root")!).render(

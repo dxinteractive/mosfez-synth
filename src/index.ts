@@ -1,3 +1,3 @@
 export default function main(): number {
-  return 42;
+  return 45;
 }
