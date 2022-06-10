@@ -1,0 +1,10 @@
+.link {
+  display: inline;
+  text-align: inherit;
+  color: var(--colorText2);
+  background: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

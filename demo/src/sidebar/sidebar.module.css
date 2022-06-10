@@ -1,0 +1,38 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  background-color: var(--colorBack2);
+  padding: 0 1rem;
+}
+
+.open {
+  width: 25rem;
+}
+
+.closed {
+  width: 2.5rem;
+}
+
+.sideways {
+  transform: rotate(90deg);
+}
+
+.sidewaysInner {
+  width: 90vh;
+}
+
+.sidebarHeader {
+  display: flex;
+}
+
+.sidebarHeading {
+  flex-grow: 1;
+}
+
+.sidebar h1 {
+  font-size: 16px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}

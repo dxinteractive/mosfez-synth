@@ -3,10 +3,12 @@ import ReactDOM from "react-dom/client";
 import "./css/base.css";
 import classes from "./demo.module.css";
 
-import thing from "mosfez-xen-synth";
-import other from "mosfez-xen-synth/other";
+// import thing from "mosfez-xen-synth";
+// import other from "mosfez-xen-synth/other";
 
-console.log(thing(), other());
+import { useWindowSize } from "@react-hook/window-size/throttled";
+
+import { Sidebar } from "./sidebar/sidebar";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -16,5 +18,15 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 
 function Main() {
-  return <div className={classes.main}>demo</div>;
+  return (
+    <div className={classes.main}>
+      <Surface />
+      <Sidebar />
+    </div>
+  );
+}
+
+function Surface() {
+  // const [width, height] = useWindowSize();
+  return <div className={classes.surface}></div>;
 }
