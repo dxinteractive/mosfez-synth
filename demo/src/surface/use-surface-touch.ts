@@ -1,7 +1,16 @@
 import { useRef, useEffect } from "react";
-import { appConsole } from "../data/console";
 
-export function useSurfaceTouch() {
+export type SurfaceEventType = "start" | "move" | "end";
+
+export type SurfaceEvent = {
+  type: SurfaceEventType;
+  x: number;
+  y: number;
+  id: number;
+  force: number;
+};
+
+export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
   const surfaceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -14,11 +23,16 @@ export function useSurfaceTouch() {
 
       for (let i = 0; i < changedTouches.length; i++) {
         const touch = changedTouches[i];
-        const x = Math.round(touch.pageX);
-        const y = Math.round(touch.pageY);
-        appConsole.warn(
-          `touch ${touch.identifier} started at [${x}, ${y}]\n force is ${touch.force}`
-        );
+        const x = touch.pageX;
+        const y = touch.pageY;
+
+        onSurfaceEvent({
+          type: "start",
+          x,
+          y,
+          id: touch.identifier,
+          force: touch.force,
+        });
       }
     };
 
@@ -27,11 +41,16 @@ export function useSurfaceTouch() {
       const { changedTouches } = e;
       for (let i = 0; i < changedTouches.length; i++) {
         const touch = changedTouches[i];
-        const x = Math.round(touch.pageX);
-        const y = Math.round(touch.pageY);
-        appConsole.log(
-          `touch ${touch.identifier} moved at [${x}, ${y}]\n force is ${touch.force}`
-        );
+        const x = touch.pageX;
+        const y = touch.pageY;
+
+        onSurfaceEvent({
+          type: "move",
+          x,
+          y,
+          id: touch.identifier,
+          force: touch.force,
+        });
       }
     };
 
@@ -40,11 +59,16 @@ export function useSurfaceTouch() {
       const { changedTouches } = e;
       for (let i = 0; i < changedTouches.length; i++) {
         const touch = changedTouches[i];
-        const x = Math.round(touch.pageX);
-        const y = Math.round(touch.pageY);
-        appConsole.error(
-          `touch ${touch.identifier} ended at [${x}, ${y}]\n force is ${touch.force}`
-        );
+        const x = touch.pageX;
+        const y = touch.pageY;
+
+        onSurfaceEvent({
+          type: "end",
+          x,
+          y,
+          id: touch.identifier,
+          force: touch.force,
+        });
       }
     };
 
@@ -54,26 +78,47 @@ export function useSurfaceTouch() {
     const mouseStart = (e: MouseEvent) => {
       e.preventDefault();
       mouseDown = true;
-      const x = Math.round(e.pageX);
-      const y = Math.round(e.pageY);
+      const x = e.pageX;
+      const y = e.pageY;
       lastPos = [x, y];
-      appConsole.warn(`mouse down at [${x}, ${y}]`);
+
+      onSurfaceEvent({
+        type: "start",
+        x,
+        y,
+        id: 0,
+        force: 1,
+      });
     };
 
     const mouseMove = (e: MouseEvent) => {
       e.preventDefault();
       if (!mouseDown) return;
-      const x = Math.round(e.pageX);
-      const y = Math.round(e.pageY);
+      const x = e.pageX;
+      const y = e.pageY;
       lastPos = [x, y];
-      appConsole.log(`mouse move at [${x}, ${y}]`);
+
+      onSurfaceEvent({
+        type: "move",
+        x,
+        y,
+        id: 0,
+        force: 1,
+      });
     };
 
     const mouseEnd = (e: MouseEvent) => {
       mouseDown = false;
       e.preventDefault();
       const [x, y] = lastPos;
-      appConsole.error(`mouse up at [${x}, ${y}]`);
+
+      onSurfaceEvent({
+        type: "end",
+        x,
+        y,
+        id: 0,
+        force: 1,
+      });
     };
 
     el.addEventListener("touchstart", touchStart);
@@ -93,7 +138,7 @@ export function useSurfaceTouch() {
       el.removeEventListener("mousemove", mouseMove);
       window.removeEventListener("mouseup", mouseEnd);
     };
-  }, []);
+  }, [onSurfaceEvent]);
 
   return surfaceRef;
 }
