@@ -1,16 +1,47 @@
 import classes from "./surface.module.css";
 import clsx from "clsx";
-
+import { useState } from "react";
 import { useWindowSize } from "@react-hook/window-size/throttled";
-import { appState } from "../data/app-state";
-import { worldToScreen, getWorldWindowBounds, Vec2 } from "./surface-transform";
-import { useSurfaceTouch } from "./use-surface-touch";
+
+import { appState, SurfaceState } from "../data/app-state";
+import {
+  worldToScreen,
+  screenToWorld,
+  getWorldWindowBounds,
+  Vec2,
+} from "./surface-transform";
+import { SurfaceEvent, useSurfaceTouch } from "./use-surface-touch";
+import { appConsole } from "../data/console";
+import { useRef } from "react";
 
 export function Surface() {
   const windowSize = useWindowSize() as Vec2;
   const surface = appState.branch("surface").useValue();
 
-  const surfaceRef = useSurfaceTouch();
+  const windowSizeRef = useRef<Vec2>(windowSize);
+  const surfaceRef = useRef<SurfaceState>(surface);
+  windowSizeRef.current = windowSize;
+  surfaceRef.current = surface;
+
+  const [handleSurfaceEvent] = useState(() => (e: SurfaceEvent) => {
+    const { type, id, force } = e;
+    const windowSize = windowSizeRef.current;
+    const surface = surfaceRef.current;
+    const [x, y] = screenToWorld(surface, windowSize, [e.x, e.y]);
+
+    let text = `${type} id:${id} at [${x.toPrecision(3)}, ${y.toPrecision(3)}]`;
+    text += `\n force is ${force}`;
+
+    if (type === "start") {
+      appConsole.warn(text);
+    } else if (type === "move") {
+      appConsole.log(text);
+    } else if (type === "end") {
+      appConsole.error(text);
+    }
+  });
+
+  const ref = useSurfaceTouch(handleSurfaceEvent);
 
   const [[xmin, xmax], [ymin, ymax]] = getWorldWindowBounds(
     surface,
@@ -20,7 +51,7 @@ export function Surface() {
   const cells: React.ReactElement[] = [];
   for (let x = xmin; x < xmax; x++) {
     for (let y = ymin; y < ymax; y++) {
-      const coord = [x, y] as Vec2;
+      const coord = [x - 0.5, y - 0.5] as Vec2;
       const [transformedX, transformedY] = worldToScreen(
         surface,
         windowSize,
@@ -39,7 +70,7 @@ export function Surface() {
   }
 
   return (
-    <div className={classes.surface} ref={surfaceRef}>
+    <div className={classes.surface} ref={ref}>
       {cells}
     </div>
   );

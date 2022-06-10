@@ -16,12 +16,18 @@ export function worldToScreen(
   ];
 }
 
-export function screenToScreen(
+export function screenToWorld(
   surface: SurfaceState,
   windowSize: Vec2,
   [x, y]: Vec2
 ): Vec2 {
-  return [x, y];
+  const { keySize, rootPositionX, rootPositionY } = surface;
+  const [windowWidth, windowHeight] = windowSize;
+
+  return [
+    (x - rootPositionX * windowWidth) / keySize,
+    (y - rootPositionY * windowHeight) / keySize,
+  ];
 }
 
 export function getWorldWindowBounds(
@@ -35,7 +41,7 @@ export function getWorldWindowBounds(
   const yAmount = Math.ceil(windowHeight / keySize);
   const xFirst = Math.floor((-rootPositionX * windowWidth) / keySize);
   const yFirst = Math.floor((-rootPositionY * windowHeight) / keySize);
-  const xBounds = [xFirst, xFirst + xAmount + 1] as Vec2;
-  const yBounds = [yFirst, yFirst + yAmount + 1] as Vec2;
+  const xBounds = [xFirst, xFirst + xAmount + 2] as Vec2;
+  const yBounds = [yFirst, yFirst + yAmount + 2] as Vec2;
   return [xBounds, yBounds];
 }

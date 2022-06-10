@@ -9,6 +9,7 @@
 
 .open {
   width: 30rem;
+  max-width: 100%;
 }
 
 .closed {
