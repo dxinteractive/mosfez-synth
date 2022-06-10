@@ -77,8 +77,6 @@ export function Surface(props: SurfaceProps) {
       // send event up
       onSurfaceNoteEvent({
         ...e,
-        x,
-        y,
         note,
       });
     },
