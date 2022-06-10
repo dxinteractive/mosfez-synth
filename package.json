@@ -26,8 +26,7 @@
     "lint": "yarn eslint src",
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build",
-    "update-yalc": "yalc publish --push && cd demo-yalc && yalc add mosfez-xen-synth && yarn",
-    "build-demo": "cd demo && yarn build"
+    "update-yalc": "yalc publish --push && cd demo-yalc && yalc add mosfez-xen-synth && yarn"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
