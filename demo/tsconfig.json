@@ -10,13 +10,14 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
-    "moduleResolution": "node16",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "mosfez-xen-synth-dev": ["../src/index"],
-      "mosfez-xen-synth-dev/*": ["../src/*"]
+      "mosfez-xen-synth": ["../src/index"],
+      "mosfez-xen-synth/*": ["../src/*"]
     }
   },
   "include": ["src", "../src"],
