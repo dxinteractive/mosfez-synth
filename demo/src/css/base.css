@@ -89,6 +89,10 @@ h6 {
 
   --colorKeyBorder: rgb(14, 61, 61);
   --colorKeyRoot: rgb(24 35 45);
+
+  --colorConsoleLog: rgb(109, 128, 146);
+  --colorConsoleWarn: rgb(255, 84, 30);
+  --colorConsoleError: rgb(192, 45, 1);
 }
 
 /*
