@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "mosfez-xen-synth": {
+      "signature": "a76543808c86d21cd46ec0b667c57c8f",
+      "file": true
+    }
+  }
+}

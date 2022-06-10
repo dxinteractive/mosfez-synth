@@ -1,0 +1,52 @@
+{
+  "name": "mosfez-xen-synth",
+  "version": "0.0.0",
+  "description": "A microtonal-aware synth engine library for web.",
+  "main": "./dist/main.js",
+  "exports": {
+    ".": {
+      "default": "./dist/main.js",
+      "types": "./dist/main.d.ts"
+    },
+    "./other": {
+      "default": "./dist/other.js",
+      "types": "./dist/other.d.ts"
+    }
+  },
+  "repository": "git@github.com:dxinteractive/mosfez-xen-synth.git",
+  "author": "Damien Clarke <dxinteractive@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "prep": "yarn && cd demo && yarn",
+    "build": "yarn rollup -c",
+    "test": "yarn jest",
+    "lint": "yarn eslint src",
+    "pretty": "yarn prettier --write .",
+    "prepare": "yarn build",
+    "update-demo": "yalc publish && cd demo && yalc add mosfez-xen-synth && yarn"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.5.1",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "esbuild": "^0.14.42",
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react": "^7.29.4",
+    "jest": "^28.1.0",
+    "prettier": "2.6.2",
+    "rollup": "^2.75.3",
+    "rollup-plugin-dts": "^4.2.2",
+    "rollup-plugin-esbuild": "^4.9.1",
+    "ts-jest": "^28.0.3",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ]
+}

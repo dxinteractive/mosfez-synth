@@ -1,0 +1,35 @@
+{
+  "name": "mosfez-xen-synth",
+  "version": "0.0.0",
+  "description": "A microtonal-aware synth engine library for web.",
+  "main": "./dist/main.js",
+  "exports": {
+    ".": {
+      "default": "./dist/main.js",
+      "types": "./dist/main.d.ts"
+    },
+    "./other": {
+      "default": "./dist/other.js",
+      "types": "./dist/other.d.ts"
+    }
+  },
+  "repository": "git@github.com:dxinteractive/mosfez-xen-synth.git",
+  "author": "Damien Clarke <dxinteractive@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "prep": "yarn && cd demo && yarn",
+    "build": "yarn rollup -c",
+    "test": "yarn jest",
+    "lint": "yarn eslint src",
+    "pretty": "yarn prettier --write .",
+    "update-demo": "yalc publish && cd demo && yalc add mosfez-xen-synth && yarn"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "yalcSig": "a76543808c86d21cd46ec0b667c57c8f"
+}
