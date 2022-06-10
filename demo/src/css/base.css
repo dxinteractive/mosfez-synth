@@ -86,6 +86,9 @@ h6 {
   --colorButtonBack: #333344;
   --colorButtonBackHover: #3d3d58;
   --colorButtonText: #ffffff;
+
+  --colorKeyBorder: rgb(14, 61, 61);
+  --colorKeyRoot: rgb(24 35 45);
 }
 
 /*

@@ -1,11 +1,13 @@
 import classes from "./sidebar.module.css";
 import clsx from "clsx";
 
-import { appState } from "../app-state";
-import { useNumberToString } from "../form-utils";
+import { appState } from "../data/app-state";
+import { useNumberToString } from "../form-utils/form-utils";
 import { useInput } from "dendriform";
 import { FieldRow } from "./field-row";
 import { Link } from "./link";
+
+const surface = appState.branch("surface");
 
 export function Sidebar() {
   const sidebarOpen = appState.branch("sidebarOpen").useValue();
@@ -42,28 +44,40 @@ export function Sidebar() {
 function Controls() {
   return (
     <div>
-      <FieldRow label="key width">
-        {appState.render("keyWidth", (keyWidthForm) => {
-          const [asString] = useNumberToString(keyWidthForm);
-          return <input type="number" {...useInput(asString)} />;
-        })}
-      </FieldRow>
-      <FieldRow label="key height">
-        {appState.render("keyHeight", (keyHeightForm) => {
-          const [asString] = useNumberToString(keyHeightForm);
-          return <input type="number" {...useInput(asString)} />;
+      <FieldRow label="key size">
+        {surface.render("keySize", (keySizeForm) => {
+          const [asString] = useNumberToString(keySizeForm);
+          return (
+            <input type="range" min="20" max="100" {...useInput(asString)} />
+          );
         })}
       </FieldRow>
       <FieldRow label="key offset x">
-        {appState.render("keyOffsetX", (keyOffsetXForm) => {
-          const [asString] = useNumberToString(keyOffsetXForm);
-          return <input type="number" {...useInput(asString)} />;
+        {surface.render("rootPositionX", (rootPositionXForm) => {
+          const [asString] = useNumberToString(rootPositionXForm);
+          return (
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.001"
+              {...useInput(asString)}
+            />
+          );
         })}
       </FieldRow>
       <FieldRow label="key offset y">
-        {appState.render("keyOffsetY", (keyOffsetYForm) => {
-          const [asString] = useNumberToString(keyOffsetYForm);
-          return <input type="number" {...useInput(asString)} />;
+        {surface.render("rootPositionY", (rootPositionYForm) => {
+          const [asString] = useNumberToString(rootPositionYForm);
+          return (
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.001"
+              {...useInput(asString)}
+            />
+          );
         })}
       </FieldRow>
     </div>

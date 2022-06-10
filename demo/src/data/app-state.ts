@@ -1,11 +1,14 @@
 import { Dendriform } from "dendriform";
 
-type AppState = {
+export type SurfaceState = {
+  keySize: number;
+  rootPositionX: number;
+  rootPositionY: number;
+};
+
+export type AppState = {
   sidebarOpen: boolean;
-  keyWidth: number;
-  keyHeight: number;
-  keyOffsetX: number;
-  keyOffsetY: number;
+  surface: SurfaceState;
 };
 
 const stateFromStorage: AppState = JSON.parse(
@@ -14,15 +17,20 @@ const stateFromStorage: AppState = JSON.parse(
 
 export const defaultState: AppState = {
   sidebarOpen: true,
-  keyWidth: 40,
-  keyHeight: 40,
-  keyOffsetX: 0,
-  keyOffsetY: 0,
+  surface: {
+    keySize: 40,
+    rootPositionX: 0.2,
+    rootPositionY: 0.8,
+  },
 };
 
 export const appState = new Dendriform<AppState>({
   ...defaultState,
   ...(stateFromStorage ?? {}),
+  surface: {
+    ...defaultState.surface,
+    ...(stateFromStorage.surface ?? {}),
+  },
 });
 
 appState.onDerive((value) => {
