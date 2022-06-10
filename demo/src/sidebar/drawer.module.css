@@ -1,0 +1,14 @@
+.contents {
+  padding: 1rem;
+}
+
+.label {
+  background-color: var(--colorBack3);
+  width: 100%;
+  padding: .25rem 1rem;
+  margin-bottom: 2px;
+}
+
+.label:hover {
+  background-color: var(--colorBack4);
+}
