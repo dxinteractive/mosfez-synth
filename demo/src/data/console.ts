@@ -23,4 +23,5 @@ export const appConsole = {
   log: createLogger("log"),
   warn: createLogger("warn"),
   error: createLogger("error"),
+  clear: () => consoleStore.set([]),
 };
