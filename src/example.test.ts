@@ -1,5 +1,3 @@
-// import main from "./index";
-
-// it("should output 45", () => {
-//   expect(main()).toBe(45);
-// });
+it("should run a fake test", () => {
+  expect(1 + 1).toBe(2);
+});
