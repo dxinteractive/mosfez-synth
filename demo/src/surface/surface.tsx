@@ -12,7 +12,6 @@ import {
 } from "./surface-transform";
 import { useSurfaceTouch } from "./use-surface-touch";
 import type { SurfaceEvent, SurfaceEventType } from "./use-surface-touch";
-import { appConsole } from "../data/console";
 import { useRef } from "react";
 
 function coordToNote(x: number, y: number): number {
@@ -22,7 +21,7 @@ function coordToNote(x: number, y: number): number {
 
 export type SurfaceNoteEvent = {
   type: SurfaceEventType;
-  id: number;
+  id: string;
   note: number;
   force: number;
 };
@@ -60,23 +59,26 @@ export function Surface(props: SurfaceProps) {
       const note = coordToNote(x, y);
 
       // log stuff of interest
-      let text = `${type} id:${id} at [${x.toPrecision(3)}, ${y.toPrecision(
-        3
-      )}]`;
-      text += `\n note is ${note}`;
-      text += `\n force is ${force}`;
+      // COMMENTED OUT
+      // let text = `${type} id:${id} at [${x.toPrecision(3)}, ${y.toPrecision(
+      //   3
+      // )}]`;
+      // text += `\n note is ${note}`;
+      // text += `\n force is ${force}`;
 
-      if (type === "start") {
-        appConsole.warn(text);
-      } else if (type === "move") {
-        appConsole.log(text);
-      } else if (type === "end") {
-        appConsole.error(text);
-      }
+      // if (type === "start") {
+      //   appConsole.warn(text);
+      // } else if (type === "move") {
+      //   appConsole.log(text);
+      // } else if (type === "end") {
+      //   appConsole.error(text);
+      // }
 
       // send event up
       onSurfaceNoteEvent({
-        ...e,
+        type,
+        id,
+        force,
         note,
       });
     },
