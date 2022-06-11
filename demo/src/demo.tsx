@@ -6,7 +6,8 @@ import classes from "./demo.module.css";
 import { Sidebar } from "./sidebar/sidebar";
 import { Surface, SurfaceNoteEvent } from "./surface/surface";
 
-// import MosfezXenSynth from "mosfez-xen-synth/v1";
+import MosfezXenSynth from "mosfez-xen-synth/v0";
+import { appConsole } from "./data/console";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -15,12 +16,20 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>
 );
 
-// const synth = new MosfezXenSynth();
+const MIDI_ROOT_OFFSET = 69;
+
+const synth = new MosfezXenSynth();
+synth.console = appConsole;
 
 const handleSurfaceEvent = (e: SurfaceNoteEvent) => {
-  console.log("surface event", e);
-  // convert to decimal midi
-  // synth.noteOn(); / synth.noteOff();
+  const { note, type, id } = e;
+
+  const decimalMidi = note + MIDI_ROOT_OFFSET;
+  if (type === "start" || e.type === "move") {
+    synth.setNote(decimalMidi, { id });
+  } else if (type === "end") {
+    synth.stopNote(id);
+  }
 };
 
 function Demo() {

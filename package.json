@@ -2,15 +2,15 @@
   "name": "mosfez-xen-synth",
   "version": "0.0.0",
   "description": "A microtonal-aware synth engine library for web.",
-  "main": "./dist/index.js",
+  "main": "./dist/all.js",
   "exports": {
-    ".": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "./all": {
+      "default": "./dist/all.js",
+      "types": "./dist/all.d.ts"
     },
-    "./other": {
-      "default": "./dist/other.js",
-      "types": "./dist/other.d.ts"
+    "./v0": {
+      "default": "./dist/v0.js",
+      "types": "./dist/v0.d.ts"
     }
   },
   "repository": "git@github.com:dxinteractive/mosfez-xen-synth.git",

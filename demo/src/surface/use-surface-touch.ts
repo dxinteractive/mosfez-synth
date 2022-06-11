@@ -1,12 +1,16 @@
 import { useRef, useEffect } from "react";
 
+function touchToId(touch: Touch): string {
+  return `touch-${touch.identifier}`;
+}
+
 export type SurfaceEventType = "start" | "move" | "end";
 
 export type SurfaceEvent = {
   type: SurfaceEventType;
   x: number;
   y: number;
-  id: number;
+  id: string;
   force: number;
 };
 
@@ -30,7 +34,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
           type: "start",
           x,
           y,
-          id: touch.identifier,
+          id: touchToId(touch),
           force: touch.force,
         });
       }
@@ -48,7 +52,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
           type: "move",
           x,
           y,
-          id: touch.identifier,
+          id: touchToId(touch),
           force: touch.force,
         });
       }
@@ -66,7 +70,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
           type: "end",
           x,
           y,
-          id: touch.identifier,
+          id: touchToId(touch),
           force: touch.force,
         });
       }
@@ -86,7 +90,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
         type: "start",
         x,
         y,
-        id: 0,
+        id: "mouse",
         force: 1,
       });
     };
@@ -102,7 +106,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
         type: "move",
         x,
         y,
-        id: 0,
+        id: "mouse",
         force: 1,
       });
     };
@@ -115,7 +119,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
         type: "end",
         x,
         y,
-        id: 0,
+        id: "mouse",
         force: 1,
       });
     };
