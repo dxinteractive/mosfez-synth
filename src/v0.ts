@@ -103,14 +103,18 @@ export default class MosfezXenSynth {
     const id = options.id !== undefined ? options.id : `${midi}`;
     const voice = this._voiceAllocator.activate(id);
     const freq = noteToFreq(midi, this._rootHz);
+    const gate = 1;
 
     this.console?.log(`activate voice ${voice} to ${freq}`);
 
-    this._voicesState[voice] = {
-      freq,
-      gate: 1,
-    };
-    this.render();
+    const existingVoice = this._voicesState[voice];
+    if (existingVoice.freq !== freq || existingVoice.gate !== gate) {
+      this._voicesState[voice] = {
+        freq,
+        gate: 1,
+      };
+      this.render();
+    }
   }
 
   stopNote(midi: number): void;
