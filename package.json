@@ -48,5 +48,9 @@
   "sideEffects": false,
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@elemaudio/core": "^1.0.5",
+    "@elemaudio/web-renderer": "^1.0.5"
+  }
 }

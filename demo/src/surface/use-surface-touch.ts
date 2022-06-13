@@ -77,7 +77,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
     };
 
     let mouseDown = false;
-    let lastPos = [0, 0];
+    let lastPos: [number, number] | undefined;
 
     const mouseStart = (e: MouseEvent) => {
       e.preventDefault();
@@ -113,15 +113,18 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
 
     const mouseEnd = () => {
       mouseDown = false;
-      const [x, y] = lastPos;
+      if (lastPos) {
+        const [x, y] = lastPos;
+        lastPos = undefined;
 
-      onSurfaceEvent({
-        type: "end",
-        x,
-        y,
-        id: "mouse",
-        force: 1,
-      });
+        onSurfaceEvent({
+          type: "end",
+          x,
+          y,
+          id: "mouse",
+          force: 1,
+        });
+      }
     };
 
     el.addEventListener("touchstart", touchStart);

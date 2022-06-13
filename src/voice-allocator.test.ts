@@ -17,7 +17,7 @@ function getVoiceCounts(allocator: VoiceAllocator): VoiceCount {
 }
 
 it("should allow total voices to be set", () => {
-  const allocator = new VoiceAllocator();
+  const allocator = new VoiceAllocator(0);
   allocator.totalVoices = 6;
   expect(allocator.totalVoices).toBe(6);
   expect(getVoiceCounts(allocator)).toEqual({
@@ -28,8 +28,7 @@ it("should allow total voices to be set", () => {
 });
 
 it("should allocate up to totalVoices number of voices sequentially", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 3;
+  const allocator = new VoiceAllocator(3);
 
   const output = [];
   output.push(allocator.activate("a"));
@@ -45,8 +44,7 @@ it("should allocate up to totalVoices number of voices sequentially", () => {
 });
 
 it("should output same voice if same id is given multiple times", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 3;
+  const allocator = new VoiceAllocator(3);
 
   const output = [];
   output.push(allocator.activate("a"));
@@ -63,8 +61,7 @@ it("should output same voice if same id is given multiple times", () => {
 });
 
 it("should allocate and release, release should free after ms", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 3;
+  const allocator = new VoiceAllocator(3);
 
   allocator.activate("a");
   allocator.activate("b");
@@ -97,8 +94,7 @@ it("should allocate and release, release should free after ms", () => {
 });
 
 it("should allocate and release and NOT free if same id is reactivated before being made free", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 1;
+  const allocator = new VoiceAllocator(1);
 
   allocator.activate("a");
   allocator.release("a", 100);
@@ -117,8 +113,7 @@ it("should allocate and release and NOT free if same id is reactivated before be
 });
 
 it("should allocate and release and NOT free if same id is reactivated and released before being made free", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 1;
+  const allocator = new VoiceAllocator(1);
 
   allocator.activate("a");
   allocator.release("a", 100);
@@ -138,8 +133,7 @@ it("should allocate and release and NOT free if same id is reactivated and relea
 });
 
 it("should allocate free voices sequentially even with releases", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 3;
+  const allocator = new VoiceAllocator(3);
 
   const output = [];
   output.push(allocator.activate("a"));
@@ -157,8 +151,7 @@ it("should allocate free voices sequentially even with releases", () => {
 });
 
 it("should reuse oldest released notes before resorting to reusing active notes", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 3;
+  const allocator = new VoiceAllocator(3);
 
   const output = [];
   output.push(allocator.activate("a")); // take free voice 0
@@ -173,8 +166,7 @@ it("should reuse oldest released notes before resorting to reusing active notes"
 });
 
 it("should reuse the first pressed notes voice if too many voices allocated", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 3;
+  const allocator = new VoiceAllocator(3);
 
   const output = [];
   output.push(allocator.activate("a"));
@@ -188,8 +180,7 @@ it("should reuse the first pressed notes voice if too many voices allocated", ()
 });
 
 it("should cancel all allocated and released voices if total voices is changed", () => {
-  const allocator = new VoiceAllocator();
-  allocator.totalVoices = 3;
+  const allocator = new VoiceAllocator(3);
 
   allocator.activate("a");
   allocator.activate("b");
