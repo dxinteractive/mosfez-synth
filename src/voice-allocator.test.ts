@@ -44,6 +44,24 @@ it("should allocate up to totalVoices number of voices sequentially", () => {
   });
 });
 
+it("should output same voice if same id is given multiple times", () => {
+  const allocator = new VoiceAllocator();
+  allocator.totalVoices = 3;
+
+  const output = [];
+  output.push(allocator.activate("a"));
+  output.push(allocator.activate("b"));
+  output.push(allocator.activate("b"));
+  output.push(allocator.activate("b"));
+
+  expect(output).toEqual([0, 1, 1, 1]);
+  expect(getVoiceCounts(allocator)).toEqual({
+    free: [2],
+    active: [0, 1],
+    released: [],
+  });
+});
+
 it("should allocate and release, release should free after ms", () => {
   const allocator = new VoiceAllocator();
   allocator.totalVoices = 3;

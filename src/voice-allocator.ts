@@ -40,24 +40,30 @@ export class VoiceAllocator {
   }
 
   activate(id: string): number {
+    // if voice is already active, do nothing and return voice number
+    const ownVoice = this._activeVoices.find(([, voiceId]) => voiceId === id);
+    if (ownVoice) {
+      const [voice] = ownVoice;
+      return voice;
+    }
+
+    // else, if a voice is free, make it active and return voice number
     const freeVoice = this._freeVoices.shift();
-    // if a voice is free, make it active
     if (freeVoice !== undefined) {
       this._activeVoices.push([freeVoice, id]);
       return freeVoice;
     }
 
-    // else, if a voice is released, reuse it
+    // else, if a voice is released, reuse it and return voice number
     const oldestReleased = this._releasedVoices.shift();
     if (oldestReleased !== undefined) {
       const [voice, , timeoutId] = oldestReleased;
-      console.log("clear", timeoutId);
       clearTimeout(timeoutId);
       this._activeVoices.push([voice, id]);
       return voice;
     }
 
-    // else, reuse the oldest active voice
+    // else, reuse the oldest active voice and return voice number
     const oldestActive = this._activeVoices.shift();
     if (oldestActive !== undefined) {
       const [voice] = oldestActive;
@@ -69,16 +75,18 @@ export class VoiceAllocator {
   }
 
   release(id: string, ms: number) {
+    // move a voice from active to released if it exists
+    // and start a timer until it is freed
     const voiceIndex = this._activeVoices.findIndex((v) => v[1] === id);
     if (voiceIndex === -1) return;
     const voice = this._activeVoices[voiceIndex];
     this._activeVoices.splice(voiceIndex, 1);
-
     const timeoutId = setTimeout(() => this.free(id), ms);
     this._releasedVoices.push([...voice, timeoutId]);
   }
 
   private free(id: string) {
+    // move a voice from released to free
     const voiceIndex = this._releasedVoices.findIndex((v) => v[1] === id);
     if (voiceIndex === -1) return;
     const [voice] = this._releasedVoices[voiceIndex];
