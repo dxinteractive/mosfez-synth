@@ -8,7 +8,9 @@ A microtonal-aware synth engine library for web.
 
 ## Development
 
-This library is written in `typescript`, bundled with `rollup`, formatted with `prettier`, linted with `eslint` and tested with `jest`.
+This library is written in [typescript](https://www.typescriptlang.org/) using the [elementary](https://www.elementary.audio/) sound engine.
+
+It is bundled with `rollup`, formatted with `prettier`, linted with `eslint` and tested with `jest`.
 
 You will need `node@16` or greater and `yarn@1` installed globally. You'll also need `yalc` installed globally if you want to publish the library into the `demo-yalc`. Clone the repo and run `yarn prep` to install deps and build. There's also:
 
