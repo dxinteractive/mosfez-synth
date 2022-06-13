@@ -9,8 +9,8 @@ export class VoiceAllocator {
   private _activeVoices: [number, string][] = [];
   private _releasedVoices: [number, string, NodeJS.Timeout][] = [];
 
-  constructor() {
-    this.totalVoices = 8;
+  constructor(totalVoices: number) {
+    this.totalVoices = totalVoices;
   }
 
   get totalVoices(): number {
@@ -41,7 +41,7 @@ export class VoiceAllocator {
 
   activate(id: string): number {
     // if voice is already active, do nothing and return voice number
-    const ownVoice = this._activeVoices.find(([, voiceId]) => voiceId === id);
+    const ownVoice = this._activeVoices.find((v) => v[1] === id);
     if (ownVoice) {
       const [voice] = ownVoice;
       return voice;
@@ -74,18 +74,20 @@ export class VoiceAllocator {
     throw new Error(`Could not find active voice to reuse`);
   }
 
-  release(id: string, ms: number) {
+  release(id: string, ms: number): number {
     // move a voice from active to released if it exists
     // and start a timer until it is freed
     const voiceIndex = this._activeVoices.findIndex((v) => v[1] === id);
-    if (voiceIndex === -1) return;
+    if (voiceIndex === -1) return -1;
     const voice = this._activeVoices[voiceIndex];
     this._activeVoices.splice(voiceIndex, 1);
     const timeoutId = setTimeout(() => this.free(id), ms);
     this._releasedVoices.push([...voice, timeoutId]);
+    return voice[0];
   }
 
   private free(id: string) {
+    console.log("free voice", id);
     // move a voice from released to free
     const voiceIndex = this._releasedVoices.findIndex((v) => v[1] === id);
     if (voiceIndex === -1) return;
