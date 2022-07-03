@@ -2,18 +2,19 @@
   "name": "mosfez-xen-synth",
   "version": "0.0.0",
   "description": "A microtonal-aware synth engine library for web.",
-  "main": "./dist/all.js",
-  "exports": {
-    "./all": {
-      "default": "./dist/all.js",
-      "types": "./dist/all.d.ts"
-    },
-    "./v0": {
-      "default": "./dist/v0.js",
-      "types": "./dist/v0.d.ts"
-    }
+  "keywords": [
+    "microtonal",
+    "xen",
+    "synth"
+  ],
+  "homepage": "https://github.com/dxinteractive/mosfez-xen-synth",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dxinteractive/mosfez-xen-synth.git"
   },
-  "repository": "git@github.com:dxinteractive/mosfez-xen-synth.git",
+  "bugs": {
+    "url": "https://github.com/dxinteractive/mosfez-xen-synth/issues"
+  },
   "author": "Damien Clarke <dxinteractive@gmail.com>",
   "license": "MIT",
   "engines": {
@@ -25,7 +26,8 @@
     "test": "yarn jest",
     "lint": "yarn eslint src",
     "pretty": "yarn prettier --write .",
-    "prepare": "yarn build",
+    "prepare": "yarn build && cp dist/* .",
+    "postpublish": "rm -f v0.* touch-start.*",
     "update-yalc": "yalc publish --push && cd demo-yalc && yalc add mosfez-xen-synth && yarn"
   },
   "devDependencies": {
@@ -47,10 +49,11 @@
   },
   "sideEffects": false,
   "files": [
-    "dist"
+    "v0.*",
+    "touch-start.*",
+    "public"
   ],
   "dependencies": {
-    "@elemaudio/core": "^1.0.5",
-    "@elemaudio/web-renderer": "^1.0.5"
+    "mosfez-faust": "^0.0.6"
   }
 }

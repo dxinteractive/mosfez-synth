@@ -1,21 +1,32 @@
 # mosfez-xen-synth
 
-A microtonal-aware synth engine library for web.
+A (soon to be created) microtonal-aware synth engine library for web.
 
-**[Play the demo!](https://dxinteractive.github.io/mosfez-xen-synth/)**
+[Play the demo](https://dxinteractive.github.io/mosfez-xen-synth/), it might not work. It's early days yet.
 
-**It's being built right now so it's probaby not finished and probably doesn't work or have fixed API or anything.**
+## Installation
+
+`npm install mosfez-xen-synth` or `yarn add mosfez-xen-synth`
+
+Then you'll need to copy the files from `node_modules/mosfez-xen-synth/public` and put it in your projects public-facing root directory that will be accessible once deployed. e.g. if you are using Vite, put them in your Vite project's `public` directory. This library will make a request for `libfaust-wasm.wasm` and `libfaust-wasm.data` when it starts up, and will not work if those files can't be found.
+
+## Usage
+
+```js
+import { MosfezXenSynth } from "mosfez-xen-synth/v0";
+
+// the rest is TBC
+```
 
 ## Development
 
-This library is written in [typescript](https://www.typescriptlang.org/) using the [elementary](https://www.elementary.audio/) sound engine.
+This library is written in [typescript](https://www.typescriptlang.org/) and [Faust](https://faust.grame.fr/).
 
 It is bundled with `rollup`, formatted with `prettier`, linted with `eslint` and tested with `jest`.
 
-You will need `node@16` or greater and `yarn@1` installed globally. You'll also need `yalc` installed globally if you want to publish the library into the `demo-yalc`. Clone the repo and run `yarn prep` to install deps and build. There's also:
+You will need `node@16` or greater and `yarn@1` installed globally. There's also:
 
 - `/demo`: a demo site that compiles and uses the synth. This is set up as part of `yarn prep`.
-- `/demo-yalc`: a demo site that uses `yalc` to allow ad-hoc testing that build and publish process works for consuming projects. This is set up as part of `yarn prep`.
 
 Then you can run:
 
@@ -23,6 +34,4 @@ Then you can run:
 - `yarn test` to run tests using `jest`.
 - `yarn pretty` to run the auto-formatter `prettier`.
 - `yarn lint` to run the linter `eslint`.
-- `cd demo && yarn dev` to run the demo
-
-To simulate a publish with `/demo-yalc`, ensure you have `yalc` installed globally and then run `yarn update-yalc` and attempt to use the library in the vite site in `/demo-yalc`.
+- `cd demo && yarn dev` to run the demo.
