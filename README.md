@@ -1,5 +1,7 @@
 # mosfez-xen-synth
 
+[![npm](https://img.shields.io/npm/v/mosfez-xen-synth.svg)](https://www.npmjs.com/package/mosfez-xen-synth) ![Master build](https://github.com/dxinteractive/mosfez-xen-synth/workflows/CI/badge.svg?branch=main)
+
 A (soon to be created) microtonal-aware synth engine library for web.
 
 [Play the demo](https://dxinteractive.github.io/mosfez-xen-synth/), it might not work. It's early days yet.
