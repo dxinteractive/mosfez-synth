@@ -22,7 +22,7 @@ import { MosfezXenSynth } from "mosfez-xen-synth/v0";
 
 ## Development
 
-This library is written in [typescript](https://www.typescriptlang.org/) and [Faust](https://faust.grame.fr/).
+This library is written in [typescript](https://www.typescriptlang.org/), [Faust](https://faust.grame.fr/) and the [mosfez-faust](https://github.com/dxinteractive/mosfez-faust) typescript library.
 
 It is bundled with `rollup`, formatted with `prettier`, linted with `eslint` and tested with `jest`.
 
