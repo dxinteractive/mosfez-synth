@@ -9,5 +9,9 @@ export default defineConfig({
       "mosfez-xen-synth": path.resolve(__dirname, "../src"),
     },
   },
+  // TODO - work out why this is
+  optimizeDeps: {
+    exclude: ["mosfez-faust"],
+  },
   plugins: [react()],
 });
