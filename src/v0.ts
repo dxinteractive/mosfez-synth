@@ -1,5 +1,6 @@
-import { el } from "@elemaudio/core";
-import WebRenderer from "@elemaudio/web-renderer";
+import { compile } from "mosfez-faust/faust";
+
+console.log("compile", compile);
 
 import { VoiceAllocator } from "./voice-allocator";
 
@@ -28,15 +29,12 @@ type VoiceState = {
   gate: number;
   freq: number;
 };
-export default class MosfezXenSynth {
+export class MosfezXenSynth {
   // components
   private _totalVoices = 8;
   private _voiceAllocator = new VoiceAllocator(this._totalVoices);
-  private _audioContext?: AudioContext;
-  private _core = new WebRenderer();
 
   // internal state
-  private _setReady?: (value: unknown) => void;
   private _voicesState: VoiceState[] = [];
 
   // public state
@@ -57,39 +55,9 @@ export default class MosfezXenSynth {
     }));
   }
 
-  ready = new Promise((r) => {
-    this._setReady = r;
-  });
-
-  async init(audioContext?: AudioContext) {
-    this._audioContext = audioContext ?? new AudioContext();
-    this._core.on("load", () => this._setReady?.(undefined));
-
-    const node = await this._core.initialize(this._audioContext, {
-      numberOfInputs: 0,
-      numberOfOutputs: 1,
-      outputChannelCount: [2],
-    });
-
-    if (!audioContext) {
-      node.connect(this._audioContext.destination);
-    }
-    return node;
-  }
-
-  async start() {
-    if (!this._audioContext) {
-      throw new Error(
-        `You must wait for the.init() / .ready to resolve before calling .start()`
-      );
-    }
-
-    if (this._audioContext.state === "suspended") {
-      await this._audioContext.resume();
-    }
-
-    this.render();
-  }
+  // ready = new Promise((r) => {
+  //   this._setReady = r;
+  // });
 
   get rootHz(): number {
     return this._rootHz;
@@ -113,7 +81,6 @@ export default class MosfezXenSynth {
         freq,
         gate: 1,
       };
-      this.render();
     }
   }
 
@@ -127,25 +94,5 @@ export default class MosfezXenSynth {
     this.console?.log(`release voice ${voice}`);
 
     this._voicesState[voice].gate = 0;
-    this.render();
-  }
-
-  render() {
-    const voices = this._voicesState.map((voice, index) => {
-      const key = `v-${index}`;
-      const gate = el.const({
-        key: `${key}:gate`,
-        value: voice.gate,
-      });
-      const env = el.adsr(0.001, 1.0, 0.4, this._envRelease, gate);
-
-      return el.mul(
-        env,
-        el.blepsaw(el.const({ key: `${key}:freq`, value: voice.freq }))
-      );
-    });
-    const summed = el.add(...voices);
-    const output = el.mul(summed, 0.5);
-    this._core.render(output, output);
   }
 }
