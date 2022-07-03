@@ -1,6 +1,6 @@
 {
   "name": "mosfez-xen-synth",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A microtonal-aware synth engine library for web.",
   "keywords": [
     "microtonal",
