@@ -31,9 +31,9 @@ const stateFromStorage: AppState = JSON.parse(
 
 export const defaultState: AppState = {
   surface: {
-    keySize: 40,
-    rootPositionX: 0.2,
-    rootPositionY: 0.8,
+    keySize: 60,
+    rootPositionX: 0.4,
+    rootPositionY: 0.6,
     stepSizeX: 1,
     stepSizeY: 5,
   },
