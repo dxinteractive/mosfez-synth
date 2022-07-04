@@ -28,8 +28,7 @@
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build && cp dist/* .",
     "postpublish": "yarn clean-up-build",
-    "clean-up-build": "rm -f v0.* touch-start.*",
-    "update-yalc": "yalc publish --push && cd demo-yalc && yalc add mosfez-synth && yarn"
+    "clean-up-build": "rm -f v0.* touch-start.*"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
