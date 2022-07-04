@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import "./css/base.css";
 import classes from "./demo-yalc.module.css";
 
-import thing from "mosfez-xen-synth";
-import other from "mosfez-xen-synth/other";
+import thing from "mosfez-synth";
+import other from "mosfez-synth/other";
 
 console.log(thing(), other());
 

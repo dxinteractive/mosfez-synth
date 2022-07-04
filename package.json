@@ -1,5 +1,5 @@
 {
-  "name": "mosfez-xen-synth",
+  "name": "mosfez-synth",
   "version": "0.0.1",
   "description": "A microtonal-aware synth engine library for web.",
   "keywords": [
@@ -7,13 +7,13 @@
     "xen",
     "synth"
   ],
-  "homepage": "https://github.com/dxinteractive/mosfez-xen-synth",
+  "homepage": "https://github.com/dxinteractive/mosfez-synth",
   "repository": {
     "type": "git",
-    "url": "git@github.com:dxinteractive/mosfez-xen-synth.git"
+    "url": "git@github.com:dxinteractive/mosfez-synth.git"
   },
   "bugs": {
-    "url": "https://github.com/dxinteractive/mosfez-xen-synth/issues"
+    "url": "https://github.com/dxinteractive/mosfez-synth/issues"
   },
   "author": "Damien Clarke <dxinteractive@gmail.com>",
   "license": "MIT",
@@ -21,14 +21,15 @@
     "node": ">=16"
   },
   "scripts": {
-    "prep": "yarn && cd demo && yarn && cd ../demo-yalc && yarn",
+    "prep": "yarn && yarn clean-up-build && cd demo && yarn",
     "build": "rm -rf dist && yarn rollup -c",
     "test": "yarn jest",
     "lint": "yarn eslint src",
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build && cp dist/* .",
-    "postpublish": "rm -f v0.* touch-start.*",
-    "update-yalc": "yalc publish --push && cd demo-yalc && yalc add mosfez-xen-synth && yarn"
+    "postpublish": "yarn clean-up-build",
+    "clean-up-build": "rm -f v0.* touch-start.*",
+    "update-yalc": "yalc publish --push && cd demo-yalc && yalc add mosfez-synth && yarn"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",

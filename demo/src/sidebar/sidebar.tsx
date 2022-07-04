@@ -29,7 +29,7 @@ export function Sidebar() {
     <div className={clsx(classes.sidebar, classes.open)}>
       <div className={classes.sidebarHeader}>
         <div className={classes.sidebarHeading}>
-          <h1>mosfez-xen-synth demo</h1>
+          <h1>mosfez-synth demo</h1>
         </div>
         <Link onClick={() => sidebar.branch("open").set(false)}>[close]</Link>
       </div>

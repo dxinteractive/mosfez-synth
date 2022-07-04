@@ -6,7 +6,7 @@ import classes from "./demo.module.css";
 import { Sidebar } from "./sidebar/sidebar";
 import { Surface, SurfaceNoteEvent } from "./surface/surface";
 
-import { MosfezXenSynth } from "mosfez-xen-synth/v0";
+import { MosfezXenSynth } from "mosfez-synth/v0";
 import { appConsole } from "./data/console";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

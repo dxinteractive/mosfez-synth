@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build-gh-pages": "tsc && vite build --base=/mosfez-xen-synth/",
+    "build-gh-pages": "tsc && vite build --base=/mosfez-synth/",
     "preview": "vite preview"
   },
   "dependencies": {

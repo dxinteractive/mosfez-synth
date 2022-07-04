@@ -1456,7 +1456,7 @@ minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
-"mosfez-xen-synth@file:.yalc/mosfez-xen-synth":
+"mosfez-synth@file:.yalc/mosfez-synth":
   version "0.0.0"
 
 ms@2.1.2:
