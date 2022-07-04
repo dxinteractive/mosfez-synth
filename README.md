@@ -15,7 +15,7 @@ Then you'll need to copy the files from `node_modules/mosfez-synth/public` and p
 ## Usage
 
 ```js
-import { MosfezXenSynth } from "mosfez-synth/v0";
+import { Synth } from "mosfez-synth/v0";
 
 // the rest is TBC
 ```

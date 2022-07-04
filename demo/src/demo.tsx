@@ -6,7 +6,7 @@ import classes from "./demo.module.css";
 import { Sidebar } from "./sidebar/sidebar";
 import { Surface, SurfaceNoteEvent } from "./surface/surface";
 
-import { MosfezXenSynth } from "mosfez-synth/v0";
+import { Synth } from "mosfez-synth/v0";
 import { appConsole } from "./data/console";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 const MIDI_ROOT_OFFSET = 69;
 
-const synth = new MosfezXenSynth();
+const synth = new Synth();
 synth.console = appConsole;
 
 const handleSurfaceEvent = (e: SurfaceNoteEvent) => {

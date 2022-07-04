@@ -29,7 +29,7 @@ type VoiceState = {
   gate: number;
   freq: number;
 };
-export class MosfezXenSynth {
+export class Synth {
   // components
   private _totalVoices = 8;
   private _voiceAllocator = new VoiceAllocator(this._totalVoices);
