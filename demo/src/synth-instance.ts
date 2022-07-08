@@ -14,9 +14,7 @@ type Params = {
 // create synth
 const synth = new Synth<Params>({ audioContext });
 
-// build dsp graph for synth
-// const sine = faust(`process = os.osc(440.0);`);
-
+// create custom dsp graph
 const dsp = `
 hz = params.pitch : si.smooth(0.9) : ba.midikey2hz;
 gate = *(params.force : si.smooth(0.9));
@@ -32,5 +30,22 @@ const output = faust(dsp, [], {
 
 synth.build(output);
 synth.connect(audioContext.destination);
+
+//
+// usage is like:
+//
+// function noteOn(pitch: number) {
+//   synth.set({
+//     pitch,
+//     force: 1
+//   });
+// }
+//
+// function noteOff() {
+//   synth.set({
+//     force: 0
+//   });
+// }
+//
 
 export { synth };
