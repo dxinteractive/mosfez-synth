@@ -1,5 +1,5 @@
 import { constructNode } from "./internal/construct-node";
-import type { Graph, GraphAudioNode, ParamValueObject } from "./graph";
+import type { DspNode, DspAudioNode, ParamValueObject } from "./types";
 
 export type SynthConfig<P> = {
   audioContext: AudioContext;
@@ -10,7 +10,7 @@ export class Synth<P extends ParamValueObject = ParamValueObject> {
   audioContext: AudioContext;
   paramState: Partial<P>;
 
-  node?: GraphAudioNode<P>;
+  node?: DspAudioNode<P>;
   connection?: [AudioNode, number?, number?];
 
   constructor(config: SynthConfig<P>) {
@@ -18,8 +18,8 @@ export class Synth<P extends ParamValueObject = ParamValueObject> {
     this.paramState = config.params ?? {};
   }
 
-  async build(graph: Graph) {
-    const newNode = await constructNode<P>(this.audioContext, graph);
+  async build(dspNode: DspNode) {
+    const newNode = await constructNode<P>(this.audioContext, dspNode);
     this.node?.disconnect();
     this.node?.destroy();
     this.node = newNode;

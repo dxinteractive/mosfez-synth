@@ -6,23 +6,23 @@ export type ParamDefinitionObject = Record<string, ParamDefinition>;
 
 export type ParamValueObject = Record<string, number>;
 
-export type GraphFaust = {
+export type DspNodeFaust = {
   type: "faust";
   dsp: string;
-  audioIn: Graph[];
+  audioIn: DspNode[];
   params: ParamDefinitionObject;
   dependencies: {
     compile: typeof Compile;
   };
 };
 
-export type Graph = GraphFaust;
+export type DspNode = DspNodeFaust;
 
-export function isFaustGraph(graph: Graph): graph is GraphFaust {
-  return graph.type === "faust";
+export function isFaustDspNode(DspNode: DspNode): DspNode is DspNodeFaust {
+  return DspNode.type === "faust";
 }
 
-export type GraphAudioNode<P> = AudioNode & {
+export type DspAudioNode<P> = AudioNode & {
   set: (params: Partial<P>) => void;
   destroy: () => void;
 };
