@@ -6,7 +6,7 @@ import classes from "./demo.module.css";
 import { Sidebar } from "./sidebar/sidebar";
 import { Surface, SurfaceNoteEvent } from "./surface/surface";
 
-import { Synth } from "mosfez-synth/v0";
+import { synth } from "./synth-instance";
 import { appConsole } from "./data/console";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -16,19 +16,26 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   </React.StrictMode>
 );
 
-const MIDI_ROOT_OFFSET = 69;
-
-const synth = new Synth();
-synth.console = appConsole;
-
 const handleSurfaceEvent = (e: SurfaceNoteEvent) => {
-  const { note, type, id } = e;
+  const { note, type } = e;
+  // e.id is voice id, ignored for now
 
+  const MIDI_ROOT_OFFSET = 69;
   const decimalMidi = note + MIDI_ROOT_OFFSET;
   if (type === "start" || e.type === "move") {
-    synth.setNote(decimalMidi, { id });
+    synth.set({
+      pitch: decimalMidi,
+      force: 1,
+    });
+
+    appConsole.log("pitch", decimalMidi);
+    appConsole.log("force", 1);
   } else if (type === "end") {
-    synth.stopNote(id);
+    synth.set({
+      force: 0,
+    });
+
+    appConsole.log("force", 0);
   }
 };
 

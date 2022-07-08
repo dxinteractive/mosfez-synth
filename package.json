@@ -28,7 +28,7 @@
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build && cp dist/* .",
     "postpublish": "yarn clean-up-build",
-    "clean-up-build": "rm -f v0.* touch-start.*"
+    "clean-up-build": "rm -f v0.* touch-start.* synth.* faust.* graph.*"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
@@ -51,9 +51,12 @@
   "files": [
     "v0.*",
     "touch-start.*",
+    "synth.*",
+    "faust.*",
+    "graph.*",
     "public"
   ],
   "dependencies": {
-    "mosfez-faust": "^0.0.6"
+    "mosfez-faust": "^0.0.8"
   }
 }
