@@ -1,1 +1,1 @@
-export * from "mosfez-faust/faust";
+export * from "mosfez-faust/touch-start";

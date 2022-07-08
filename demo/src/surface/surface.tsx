@@ -19,6 +19,10 @@ function coordToNote(x: number, y: number): number {
   return -Math.round(y) * stepSizeY + Math.round(x) * stepSizeX;
 }
 
+function mod(n: number, m: number) {
+  return ((n % m) + m) % m;
+}
+
 export type SurfaceNoteEvent = {
   type: SurfaceEventType;
   id: string;
@@ -103,7 +107,8 @@ export function Surface(props: SurfaceProps) {
       );
 
       // BAD HARDCODED 12!
-      const isRoot = coordToNote(x, y) % scaleSize === 0;
+      const step = mod(coordToNote(x, y), scaleSize);
+      const isRoot = step === 0;
 
       cells.push(
         <Cell
@@ -112,7 +117,9 @@ export function Surface(props: SurfaceProps) {
           x={transformedX}
           y={transformedY}
           isRoot={isRoot}
-        />
+        >
+          {step}
+        </Cell>
       );
     }
   }
@@ -125,6 +132,7 @@ export function Surface(props: SurfaceProps) {
 }
 
 type CellProps = {
+  children: React.ReactNode;
   keySize: number;
   x: number;
   y: number;
@@ -132,7 +140,7 @@ type CellProps = {
 };
 
 function Cell(props: CellProps) {
-  const { keySize, x, y, isRoot } = props;
+  const { children, keySize, x, y, isRoot } = props;
 
   const style = {
     width: `${keySize}px`,
@@ -142,6 +150,8 @@ function Cell(props: CellProps) {
   };
 
   return (
-    <div className={clsx(classes.cell, isRoot && classes.root)} style={style} />
+    <div className={clsx(classes.cell, isRoot && classes.root)} style={style}>
+      {children}
+    </div>
   );
 }

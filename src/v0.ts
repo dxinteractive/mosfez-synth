@@ -2,7 +2,7 @@ import { compile } from "mosfez-faust/faust";
 
 console.log("compile", compile);
 
-import { VoiceAllocator } from "./voice-allocator";
+import { VoiceAllocator } from "./internal/voice-allocator";
 
 function noteToFreq(note: number, rootHz: number): number {
   return (rootHz / 32) * 2 ** ((note - 9) / 12);

@@ -12,7 +12,7 @@ export function Controls() {
         {surface.render("keySize", (keySizeForm) => {
           const [asString] = useNumberToString(keySizeForm);
           return (
-            <input type="range" min="20" max="100" {...useInput(asString)} />
+            <input type="range" min="20" max="200" {...useInput(asString)} />
           );
         })}
       </FieldRow>
