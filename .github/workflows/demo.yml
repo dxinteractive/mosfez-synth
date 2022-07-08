@@ -1,4 +1,4 @@
-name: Build and Deploy Demo
+name: Build Demo
 on: [push]
 jobs:
   deploy:
