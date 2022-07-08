@@ -32,6 +32,3 @@ jobs:
         run: yarn test
         env:
           CI: true
-      
-      - name: Build demo (and check library types)
-        run: cd demo && yarn build-gh-pages
