@@ -62,41 +62,45 @@ function constructFaustDsp(dspNode: DspNodeFaust): string {
   // add input dsp
 
   dspNode.audioIn.forEach((audioIn, key) => {
-    dsp += `\ninput_${key} = environment {\n`;
-    dsp += constructFaustDsp(audioIn);
-    dsp += "};\n";
+    dsp += writeEnvironment(`input_${key}`, constructFaustDsp(audioIn));
   });
 
   const inputDspVars = dspNode.audioIn
     .map((_value, key) => `input_${key}.process`)
     .join(",");
 
+  const processInput = `${inputDspVars} : `;
+
   // add params
-  dsp += "\nparams = environment {\n";
-  Object.entries(dspNode.params).forEach(([name, value]) => {
-    if (typeof value === "number") {
-      dsp += `  ${name} = ${value};\n`;
-      return;
-    }
+  const paramsDsp = Object.entries(dspNode.params)
+    .map(([name, value]) => {
+      if (typeof value === "number") {
+        return `${name} = ${value};\n`;
+      }
 
-    if (typeof value === "string" && value[0] === ":") {
-      const sliced = name.slice(0);
-      dsp += `  ${sliced} = hslider("${sliced}",0.0,-9999999.0,9999999.0,0.0000001);\n`;
-      return;
-    }
+      if (typeof value === "string" && value[0] === ":") {
+        const sliced = name.slice(0);
+        return `${sliced} = hslider("${sliced}",0.0,-9999999.0,9999999.0,0.0000001);`;
+      }
 
-    throw new Error(
-      `param "${name}" must be a number or a string beginning with ":"`
-    );
-  });
-  dsp += "};\n";
+      throw new Error(
+        `param "${name}" must be a number or a string beginning with ":"`
+      );
+    })
+    .join("\n");
+
+  dsp += writeEnvironment("params", paramsDsp);
 
   // add provided dsp code
   dsp +=
     inputDspVars.length === 0
       ? dspNode.dsp
-      : dspNode.dsp.replace("process = ", `process = ${inputDspVars} : `);
+      : dspNode.dsp.replace("process = ", `process = ${processInput}`);
 
   // return result
   return dsp;
+}
+
+function writeEnvironment(name: string, dsp: string): string {
+  return `${name} = environment { \n  ${dsp.replace(/\n/g, "\n  ")} \n};\n`;
 }
