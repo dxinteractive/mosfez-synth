@@ -23,6 +23,6 @@ export function isFaustGraph(graph: Graph): graph is GraphFaust {
 }
 
 export type GraphAudioNode<P> = AudioNode & {
-  set: (params: P) => void;
+  set: (params: Partial<P>) => void;
   destroy: () => void;
 };

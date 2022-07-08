@@ -6,11 +6,11 @@ export type SynthConfig<P> = {
   params?: Partial<P>;
 };
 
-export class Synth<P = ParamValueObject> {
+export class Synth<P extends ParamValueObject = ParamValueObject> {
   audioContext: AudioContext;
   paramState: Partial<P>;
 
-  node?: GraphAudioNode<Partial<P>>;
+  node?: GraphAudioNode<P>;
   connection?: [AudioNode, number?, number?];
 
   constructor(config: SynthConfig<P>) {
@@ -19,7 +19,7 @@ export class Synth<P = ParamValueObject> {
   }
 
   async build(graph: Graph) {
-    const newNode = await constructNode<Partial<P>>(this.audioContext, graph);
+    const newNode = await constructNode<P>(this.audioContext, graph);
     this.node?.disconnect();
     this.node?.destroy();
     this.node = newNode;

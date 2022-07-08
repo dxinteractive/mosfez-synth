@@ -24,7 +24,7 @@ export async function constructFaustNode<P extends ParamValueObject>(
   const paramsUsed = faustNode.getParams();
 
   // add a set method
-  node.set = (params: P) => {
+  node.set = (params: Partial<P>) => {
     paramsUsed.forEach((name) => {
       const paramKey = name.replace(/^\/FaustDSP\//g, "");
       const value = params[paramKey] ?? 0;
