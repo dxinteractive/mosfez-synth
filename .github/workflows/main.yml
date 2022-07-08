@@ -34,4 +34,4 @@ jobs:
           CI: true
       
       - name: Build demo (and check library types)
-        run: yarn build-gh-pages
+        run: cd demo && yarn build-gh-pages
