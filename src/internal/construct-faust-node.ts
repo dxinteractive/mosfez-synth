@@ -7,9 +7,10 @@ export async function constructFaustNode<P extends ParamValueObject>(
   const { dependencies } = graph;
 
   // build dsp
-  let dsp = `import("stdfaust.lib");\n`;
+  let dsp = `import("stdfaust.lib");\n\n`;
   dsp += constructFaustDsp(graph);
   console.log("dsp", dsp);
+
   const faustNode = await dependencies.compile(audioContext, dsp);
   const node = faustNode as unknown as GraphAudioNode<P>;
 
@@ -36,23 +37,32 @@ export async function constructFaustNode<P extends ParamValueObject>(
 
 function constructFaustDsp(graph: GraphFaust): string {
   // write params into dsp
-  const params = Object.entries(graph.params)
-    .map(([name, value]) => {
-      if (typeof value === "number") {
-        return `param_${name} = ${value};`;
-      }
 
-      if (typeof value === "string" && value[0] === ":") {
-        const sliced = name.slice(0);
-        return `param_${sliced} = hslider("${sliced}",0.0,-9999999.0,9999999.0,0.0000001);`;
-      }
+  let dsp = "";
 
-      throw new Error(
-        `param "${name}" must be a number or a string beginning with ":"`
-      );
-    })
-    .join("\n");
+  // add params
+  dsp += "params = environment {\n";
+  Object.entries(graph.params).forEach(([name, value]) => {
+    if (typeof value === "number") {
+      dsp += `  ${name} = ${value};\n`;
+      return;
+    }
 
-  // add provided dsp code and return
-  return `${params}\n${graph.dsp}`;
+    if (typeof value === "string" && value[0] === ":") {
+      const sliced = name.slice(0);
+      dsp += `  ${sliced} = hslider("${sliced}",0.0,-9999999.0,9999999.0,0.0000001);\n`;
+      return;
+    }
+
+    throw new Error(
+      `param "${name}" must be a number or a string beginning with ":"`
+    );
+  });
+  dsp += "};\n";
+
+  // add provided dsp code
+  dsp += graph.dsp;
+
+  // return result
+  return dsp;
 }

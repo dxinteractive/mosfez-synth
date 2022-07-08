@@ -18,10 +18,10 @@ const synth = new Synth<Params>({ audioContext });
 // const sine = faust(`process = os.osc(440.0);`);
 
 const dsp = `
-hz = param_pitch : si.smooth(0.9) : ba.midikey2hz;
-gate = *(param_force : si.smooth(0.9));
-tremolo = *(os.osc(param_speed) * 0.2 + 0.5);
-process = os.triangle(hz) : gate : tremolo;
+hz = params.pitch : si.smooth(0.9) : ba.midikey2hz;
+gate = *(params.force : si.smooth(0.9));
+tremolo = *(os.osc(params.speed) * 0.1 + 0.8);
+process = os.triangle(hz) : gate : tremolo : *(0.2);
 `;
 
 const output = faust(dsp, [], {
