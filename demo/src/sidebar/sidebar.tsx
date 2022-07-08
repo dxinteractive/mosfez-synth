@@ -34,7 +34,7 @@ export function Sidebar() {
         </div>
         <Link onClick={() => sidebar.branch("open").set(false)}>[close]</Link>
       </div>
-      <Drawer label="Tuning settings" state={sidebar.branch("tuning")}>
+      <Drawer label="Tuning settings" state={sidebar.branch("tuningOpen")}>
         <SidebarTuningSettings />
       </Drawer>
       <Drawer label="Surface settings" state={sidebar.branch("surfaceOpen")}>
@@ -43,6 +43,11 @@ export function Sidebar() {
       <Drawer label="Debug console" state={sidebar.branch("consoleOpen")}>
         <Console />
       </Drawer>
+      <div className={classes.repo}>
+        <Link href="https://github.com/dxinteractive/mosfez-synth">
+          github repo
+        </Link>
+      </div>
     </div>
   );
 }

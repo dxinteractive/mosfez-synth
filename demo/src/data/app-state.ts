@@ -10,6 +10,7 @@ export type SurfaceState = {
 
 export type SidebarState = {
   open: boolean;
+  tuningOpen: boolean;
   surfaceOpen: boolean;
   consoleOpen: boolean;
 };
@@ -39,6 +40,7 @@ export const defaultState: AppState = {
   },
   sidebar: {
     open: false,
+    tuningOpen: true,
     surfaceOpen: true,
     consoleOpen: false,
   },

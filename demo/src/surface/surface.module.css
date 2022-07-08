@@ -13,7 +13,7 @@
   position: absolute;
   border-right: 1px solid var(--colorKeyBorder);
   border-bottom: 1px solid var(--colorKeyBorder);
-  color: var(--colorText2);
+  color: var(--colorText3);
 }
 
 .equave {

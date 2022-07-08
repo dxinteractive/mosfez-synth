@@ -1,7 +1,7 @@
 .link {
   display: inline;
   text-align: inherit;
-  color: var(--colorText2);
+  color: var(--colorText2) !important;
   background: none;
 }
 
