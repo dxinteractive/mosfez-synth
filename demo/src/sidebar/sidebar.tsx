@@ -2,7 +2,8 @@ import classes from "./sidebar.module.css";
 import clsx from "clsx";
 
 import { appState } from "../data/app-state";
-import { Controls } from "./sidebar-controls";
+import { SidebarSurfaceSettings } from "./sidebar-surface-settings";
+import { SidebarTuningSettings } from "./sidebar-tuning-settings";
 import { Console } from "./sidebar-console";
 import { Link } from "./link";
 import { Drawer } from "./drawer";
@@ -33,8 +34,11 @@ export function Sidebar() {
         </div>
         <Link onClick={() => sidebar.branch("open").set(false)}>[close]</Link>
       </div>
+      <Drawer label="Tuning settings" state={sidebar.branch("tuning")}>
+        <SidebarTuningSettings />
+      </Drawer>
       <Drawer label="Surface settings" state={sidebar.branch("surfaceOpen")}>
-        <Controls />
+        <SidebarSurfaceSettings />
       </Drawer>
       <Drawer label="Debug console" state={sidebar.branch("consoleOpen")}>
         <Console />

@@ -5,7 +5,7 @@ import { FieldRow } from "./field-row";
 
 const surface = appState.branch("surface");
 
-export function Controls() {
+export function SidebarSurfaceSettings() {
   return (
     <div>
       <FieldRow label="key size">

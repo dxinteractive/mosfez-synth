@@ -16,6 +16,10 @@
   color: var(--colorText2);
 }
 
+.equave {
+  background-color: var(--colorKeyEquave);
+}
+
 .root {
   background-color: var(--colorKeyRoot);
 }

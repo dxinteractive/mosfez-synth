@@ -14,9 +14,14 @@ import { useSurfaceTouch } from "./use-surface-touch";
 import type { SurfaceEvent, SurfaceEventType } from "./use-surface-touch";
 import { useRef } from "react";
 
-function coordToNote(x: number, y: number): number {
+function coordToStep(x: number, y: number): number {
   const { stepSizeX, stepSizeY } = appState.value.surface;
   return -Math.round(y) * stepSizeY + Math.round(x) * stepSizeX;
+}
+
+function stepToDecimalMidi(step: number, edo: number) {
+  const middleC = 72;
+  return (step / edo) * 12 + middleC;
 }
 
 function mod(n: number, m: number) {
@@ -26,7 +31,7 @@ function mod(n: number, m: number) {
 export type SurfaceNoteEvent = {
   type: SurfaceEventType;
   id: string;
-  note: number;
+  decimalMidi: number;
   force: number;
 };
 
@@ -51,7 +56,7 @@ export function Surface(props: SurfaceProps) {
       if (!onSurfaceNoteEvent) return;
 
       // transform surface event into world space
-      const { type, id, force } = e;
+      const { type, id, force = 1 } = e;
       const coord = [e.x, e.y] as Vec2;
       const [x, y] = screenToWorld(
         surfaceRef.current,
@@ -60,7 +65,10 @@ export function Surface(props: SurfaceProps) {
       );
 
       // turn that into a note number
-      const note = coordToNote(x, y);
+      const step = coordToStep(x, y);
+
+      const edo = appState.branch(["tuning", "scaleSize"]).value;
+      const decimalMidi = stepToDecimalMidi(step, edo);
 
       // log stuff of interest
       // COMMENTED OUT
@@ -83,7 +91,7 @@ export function Surface(props: SurfaceProps) {
         type,
         id,
         force,
-        note,
+        decimalMidi,
       });
     },
     [onSurfaceNoteEvent]
@@ -106,9 +114,10 @@ export function Surface(props: SurfaceProps) {
         coord
       );
 
-      // BAD HARDCODED 12!
-      const step = mod(coordToNote(x, y), scaleSize);
+      const step = coordToStep(x, y);
+      const stepReduced = mod(step, scaleSize);
       const isRoot = step === 0;
+      const isEquave = stepReduced === 0 && !isRoot;
 
       cells.push(
         <Cell
@@ -117,8 +126,9 @@ export function Surface(props: SurfaceProps) {
           x={transformedX}
           y={transformedY}
           isRoot={isRoot}
+          isEquave={isEquave}
         >
-          {step}
+          {stepReduced}
         </Cell>
       );
     }
@@ -137,10 +147,11 @@ type CellProps = {
   x: number;
   y: number;
   isRoot?: boolean;
+  isEquave?: boolean;
 };
 
 function Cell(props: CellProps) {
-  const { children, keySize, x, y, isRoot } = props;
+  const { children, keySize, x, y, isRoot, isEquave } = props;
 
   const style = {
     width: `${keySize}px`,
@@ -150,7 +161,14 @@ function Cell(props: CellProps) {
   };
 
   return (
-    <div className={clsx(classes.cell, isRoot && classes.root)} style={style}>
+    <div
+      className={clsx(
+        classes.cell,
+        isRoot && classes.root,
+        isEquave && classes.equave
+      )}
+      style={style}
+    >
       {children}
     </div>
   );

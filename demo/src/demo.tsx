@@ -17,19 +17,17 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 
 const handleSurfaceEvent = (e: SurfaceNoteEvent) => {
-  const { note, type } = e;
+  const { decimalMidi, type, force } = e;
   // e.id is voice id, ignored for now
 
-  const MIDI_ROOT_OFFSET = 69;
-  const decimalMidi = note + MIDI_ROOT_OFFSET;
   if (type === "start" || e.type === "move") {
     synth.set({
       pitch: decimalMidi,
-      force: 1,
+      force,
     });
 
     appConsole.log("pitch", decimalMidi);
-    appConsole.log("force", 1);
+    appConsole.log("force", force);
   } else if (type === "end") {
     synth.set({
       force: 0,
