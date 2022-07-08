@@ -14,7 +14,7 @@ type Params = {
 // create synth
 const synth = new Synth<Params>({ audioContext });
 
-// create custom dsp graph
+// create custom dsp
 const dsp = `
 hz = params.pitch : si.smooth(0.9) : ba.midikey2hz;
 gate = *(params.force : si.smooth(0.9));

@@ -1,11 +1,11 @@
 import { compile } from "mosfez-faust/faust";
-import type { Graph, ParamDefinitionObject } from "./graph";
+import type { DspNode, ParamDefinitionObject } from "./types";
 
 export function faust(
   dsp: string,
-  audioIn: Graph[],
+  audioIn: DspNode[],
   params: ParamDefinitionObject = {}
-): Graph {
+): DspNode {
   return {
     type: "faust",
     dsp,

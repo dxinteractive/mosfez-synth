@@ -1,26 +1,25 @@
-import type { GraphFaust, GraphAudioNode, ParamValueObject } from "../graph";
+import type { DspNodeFaust, DspAudioNode, ParamValueObject } from "../types";
 
 export async function constructFaustNode<P extends ParamValueObject>(
   audioContext: AudioContext,
-  graph: GraphFaust
-): Promise<GraphAudioNode<P>> {
-  const { dependencies } = graph;
+  dspNode: DspNodeFaust
+): Promise<DspAudioNode<P>> {
+  const { dependencies } = dspNode;
 
   // build dsp
   let dsp = `import("stdfaust.lib");\n\n`;
-  dsp += constructFaustDsp(graph);
+  dsp += constructFaustDsp(dspNode);
   console.log("dsp", dsp);
 
   const faustNode = await dependencies.compile(audioContext, dsp);
-  const node = faustNode as unknown as GraphAudioNode<P>;
+  const node = faustNode as unknown as DspAudioNode<P>;
 
   // cascade any calls to destroy
-  const faustDestroy = node.destroy;
   node.destroy = () => {
-    console.log("destroy");
-    faustDestroy();
+    faustNode.destroy();
   };
 
+  // precalculate params used in this node
   const paramsUsed = faustNode.getParams();
 
   // add a set method
@@ -35,14 +34,14 @@ export async function constructFaustNode<P extends ParamValueObject>(
   return node;
 }
 
-function constructFaustDsp(graph: GraphFaust): string {
+function constructFaustDsp(dspNode: DspNodeFaust): string {
   // write params into dsp
 
   let dsp = "";
 
   // add params
   dsp += "params = environment {\n";
-  Object.entries(graph.params).forEach(([name, value]) => {
+  Object.entries(dspNode.params).forEach(([name, value]) => {
     if (typeof value === "number") {
       dsp += `  ${name} = ${value};\n`;
       return;
@@ -61,7 +60,7 @@ function constructFaustDsp(graph: GraphFaust): string {
   dsp += "};\n";
 
   // add provided dsp code
-  dsp += graph.dsp;
+  dsp += dspNode.dsp;
 
   // return result
   return dsp;

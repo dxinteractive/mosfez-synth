@@ -1,7 +1,7 @@
 import dts from "rollup-plugin-dts";
 import esbuild from "rollup-plugin-esbuild";
 
-const entrypoints = ["v0", "touch-start", "synth", "faust", "graph"];
+const entrypoints = ["v0", "touch-start", "synth", "faust", "types"];
 
 export default entrypoints.flatMap((name) => {
   const common = {
