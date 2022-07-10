@@ -1,16 +1,20 @@
 import {
   DspNode,
+  DspNodeFaust,
+  DspNodePoly,
   isFaustDspNode,
+  isPolyDspNode,
   DspAudioNode,
   ParamValueObject,
-  DspNodeFaust,
 } from "../types";
+
+import { series, env, lines } from "./faust-dsp-utils";
 
 export async function constructNode<P extends ParamValueObject>(
   audioContext: AudioContext,
-  dspNode: DspNode
+  dspNode: DspNode<P>
 ): Promise<DspAudioNode<P>> {
-  if (isFaustDspNode(dspNode)) {
+  if (isFaustDspNode(dspNode) || isPolyDspNode(dspNode)) {
     return await constructFaustNode<P>(audioContext, dspNode);
   }
   // @ts-expect-error - types do not allow this path yet
@@ -18,22 +22,23 @@ export async function constructNode<P extends ParamValueObject>(
 }
 
 //
-// faust
+// faust and poly
 //
 
 async function constructFaustNode<P extends ParamValueObject>(
   audioContext: AudioContext,
-  dspNode: DspNodeFaust
+  dspNode: DspNodeFaust<P> | DspNodePoly<P>
 ): Promise<DspAudioNode<P>> {
   const { dependencies } = dspNode;
 
   // build dsp
-  let dsp = `import("stdfaust.lib");\n\n`;
-  dsp += constructFaustDsp(dspNode);
+  const dspToCompile = lines([
+    'import("stdfaust.lib");',
+    constructFaustDsp(dspNode),
+  ]);
 
-  console.log("compiled dsp:", dsp);
-
-  const faustNode = await dependencies.compile(audioContext, dsp);
+  console.log("dsp to compile:", dspToCompile);
+  const faustNode = await dependencies.compile(audioContext, dspToCompile);
   const node = faustNode as unknown as DspAudioNode<P>;
 
   // cascade any calls to destroy
@@ -43,6 +48,7 @@ async function constructFaustNode<P extends ParamValueObject>(
 
   // precalculate params used in this node
   const paramsUsed = faustNode.getParams();
+  console.log("paramsUsed", paramsUsed);
 
   // add a set method
   node.set = (params: Partial<P>) => {
@@ -56,51 +62,54 @@ async function constructFaustNode<P extends ParamValueObject>(
   return node;
 }
 
-function constructFaustDsp(dspNode: DspNodeFaust): string {
-  let dsp = "";
+function constructFaustDsp<P extends ParamValueObject>(
+  dspNode: DspNodeFaust<P> | DspNodePoly<P>,
+  i = 0
+): string {
+  if (isPolyDspNode(dspNode)) {
+    const voiceDsp = constructFaustDsp(dspNode.voice).replace(
+      "process = ",
+      `voice(i) = `
+    );
 
-  // add input dsp
+    return lines([
+      voiceDsp,
+      `process = par(i, ${dspNode.max}, voice(i)) :> _;`,
+    ]);
+  }
 
-  dspNode.audioIn.forEach((audioIn, key) => {
-    dsp += writeEnvironment(`input_${key}`, constructFaustDsp(audioIn));
-  });
+  const { inputs = [], params, dsp } = dspNode;
 
-  const inputDspVars = dspNode.audioIn
-    .map((_value, key) => `input_${key}.process`)
-    .join(",");
+  // inputs
+  const inputDspVars = series(inputs, ",", (_, key) => `input_${key}.process`);
+  const inputDsp = series(inputs, ",", (dspNode, key) =>
+    env(`input_${key}`, constructFaustDsp(dspNode))
+  );
 
-  const processInput = `${inputDspVars} : `;
-
-  // add params
-  const paramsDsp = Object.entries(dspNode.params)
-    .map(([name, value]) => {
+  // params
+  const paramsDsp = env(
+    "params",
+    series(Object.entries(params), "\n", ([name, value]) => {
       if (typeof value === "number") {
         return `${name} = ${value};\n`;
       }
 
       if (typeof value === "string" && value[0] === ":") {
         const sliced = name.slice(0);
-        return `${sliced} = hslider("${sliced}",0.0,-9999999.0,9999999.0,0.0000001);`;
+        return `${sliced} = hslider("${sliced}_%${i}",0.0,-9999999.0,9999999.0,0.0000001);`;
       }
 
       throw new Error(
         `param "${name}" must be a number or a string beginning with ":"`
       );
     })
-    .join("\n");
+  );
 
-  dsp += writeEnvironment("params", paramsDsp);
-
-  // add provided dsp code
-  dsp +=
+  // provided dsp code
+  const bodyDsp =
     inputDspVars.length === 0
-      ? dspNode.dsp
-      : dspNode.dsp.replace("process = ", `process = ${processInput}`);
+      ? dsp
+      : dsp.replace("process = ", `process = ${inputDspVars} : `);
 
-  // return result
-  return dsp;
-}
-
-function writeEnvironment(name: string, dsp: string): string {
-  return `${name} = environment { \n  ${dsp.replace(/\n/g, "\n  ")} \n};\n`;
+  return lines([inputDsp, paramsDsp, bodyDsp]);
 }
