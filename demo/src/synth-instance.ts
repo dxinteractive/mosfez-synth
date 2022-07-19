@@ -8,6 +8,7 @@ const audioContext = new window.AudioContext();
 touchStart(audioContext);
 
 type Params = {
+  voice: string;
   force: number;
   pitch: number;
   speed: number;
@@ -25,7 +26,7 @@ const triangle = faust<Params>(
 );
 
 // create custom gate
-const gated = faust<Params>("process = *(params.force : si.smooth(0.9));", {
+const gated = faust<Params>("process = *(params.force : si.smooth(0.99999));", {
   inputs: [triangle],
   force: ":force",
 });

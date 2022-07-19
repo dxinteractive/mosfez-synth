@@ -22,6 +22,7 @@ const handleSurfaceEvent = (e: SurfaceNoteEvent) => {
 
   if (type === "start" || e.type === "move") {
     synth.set({
+      voice: e.id,
       pitch: decimalMidi,
       force,
     });
@@ -30,6 +31,7 @@ const handleSurfaceEvent = (e: SurfaceNoteEvent) => {
     appConsole.log("force", force);
   } else if (type === "end") {
     synth.set({
+      voice: e.id,
       force: 0,
     });
 

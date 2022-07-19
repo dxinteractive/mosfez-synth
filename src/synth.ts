@@ -7,11 +7,11 @@ export type SynthConfig<P> = {
 };
 
 export class Synth<P extends ParamValueObject> {
-  audioContext: AudioContext;
-  paramState: Partial<P>;
+  private audioContext: AudioContext;
+  private paramState: Partial<P>;
 
-  node?: DspAudioNode<P>;
-  connection?: [AudioNode, number?, number?];
+  private node?: DspAudioNode<P>;
+  private connection?: [AudioNode, number?, number?];
 
   constructor(config: SynthConfig<P>) {
     this.audioContext = config.audioContext;

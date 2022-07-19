@@ -1,16 +1,12 @@
 import type { compile as Compile } from "mosfez-faust/faust";
+import type { VoiceAllocator } from "./internal/voice-allocator";
 
-export type ParamValueObject = Record<string, number>;
+export type ParamValueObject = Record<string, number | string>;
 
 export type ParamDefinition = number | string;
 
-export type ParamDefinitionObject<P extends ParamValueObject> = Record<
-  keyof P,
-  string | number
->;
-
-export type FaustParamDefinitionObject<P extends ParamValueObject> = Partial<
-  ParamDefinitionObject<P>
+export type ParamDefinitionObject<P extends ParamValueObject> = Partial<
+  Record<keyof P, string | number>
 > & {
   inputs?: DspNode<P>[];
 };
@@ -28,9 +24,9 @@ export type DspNodeFaust<P extends ParamValueObject> = {
 export type DspNodePoly<P extends ParamValueObject> = {
   type: "poly";
   voice: DspNode<P>;
-  max: number;
+  polyphony: number;
   dependencies: {
-    compile: typeof Compile;
+    voiceAllocator: typeof VoiceAllocator;
   };
 };
 

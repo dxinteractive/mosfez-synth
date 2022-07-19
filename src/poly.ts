@@ -1,16 +1,16 @@
-import { compile } from "mosfez-faust/faust";
+import { VoiceAllocator } from "./internal/voice-allocator";
 import type { DspNode, ParamValueObject } from "./types";
 
 export function poly<P extends ParamValueObject>(
   voice: DspNode<P>,
-  max: number
+  polyphony: number
 ): DspNode<P> {
   return {
     type: "poly",
     voice,
-    max,
+    polyphony,
     dependencies: {
-      compile,
+      voiceAllocator: VoiceAllocator,
     },
   };
 }
