@@ -1,28 +1,52 @@
 import type { compile as Compile } from "mosfez-faust/faust";
+import type { VoiceController } from "./internal/voice-controller";
+
+export type ParamValueObject = Record<string, number | string>;
 
 export type ParamDefinition = number | string;
 
-export type ParamDefinitionObject = Record<string, ParamDefinition>;
+export type ParamDefinitionObject<P extends ParamValueObject> = Partial<
+  Record<keyof P, string | number>
+> & {
+  inputs?: DspNode<P>[];
+};
 
-export type ParamValueObject = Record<string, number>;
-
-export type DspNodeFaust = {
+export type DspNodeFaust<P extends ParamValueObject> = {
   type: "faust";
   dsp: string;
-  audioIn: DspNode[];
-  params: ParamDefinitionObject;
+  inputs?: DspNode<P>[];
+  params: Partial<ParamDefinitionObject<P>>;
   dependencies: {
     compile: typeof Compile;
   };
 };
 
-export type DspNode = DspNodeFaust;
+export type DspNodePoly<P extends ParamValueObject> = {
+  type: "poly";
+  voice: DspNode<P>;
+  polyphony: number;
+  dependencies: {
+    VoiceController: typeof VoiceController;
+  };
+};
 
-export function isFaustDspNode(DspNode: DspNode): DspNode is DspNodeFaust {
+export type DspNode<P extends ParamValueObject> =
+  | DspNodeFaust<P>
+  | DspNodePoly<P>;
+
+export function isFaustDspNode<P extends ParamValueObject>(
+  DspNode: DspNode<P>
+): DspNode is DspNodeFaust<P> {
   return DspNode.type === "faust";
 }
 
-export type DspAudioNode<P> = AudioNode & {
+export function isPolyDspNode<P extends ParamValueObject>(
+  DspNode: DspNode<P>
+): DspNode is DspNodePoly<P> {
+  return DspNode.type === "poly";
+}
+
+export type DspAudioNode<P extends ParamValueObject> = AudioNode & {
   set: (params: Partial<P>) => void;
   destroy: () => void;
 };
