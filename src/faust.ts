@@ -1,16 +1,17 @@
 import { compile } from "mosfez-faust/faust";
 import type { DspNode, ParamDefinitionObject } from "./types";
 
-export function faust(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function faust<P extends Record<string, any>>(
   dsp: string,
-  audioIn: DspNode[],
-  params: ParamDefinitionObject = {}
-): DspNode {
+  params: ParamDefinitionObject<P>
+): DspNode<P> {
+  const { inputs, ...rest } = params;
   return {
     type: "faust",
     dsp,
-    audioIn,
-    params,
+    inputs,
+    params: rest as Partial<P>,
     dependencies: {
       compile,
     },
