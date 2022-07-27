@@ -2,197 +2,163 @@ import { VoiceAllocator } from "./voice-allocator";
 
 jest.useFakeTimers();
 
-type VoiceCount = {
-  free: number[];
-  active: number[];
-  released: number[];
-};
-
-function getVoiceCounts(allocator: VoiceAllocator): VoiceCount {
-  return {
-    free: allocator.freeVoices,
-    active: allocator.activeVoices.map((a) => a[0]),
-    released: allocator.releasedVoices.map((a) => a[0]),
-  };
-}
-
-it("should allow total voices to be set", () => {
-  const allocator = new VoiceAllocator(0);
-  allocator.totalVoices = 6;
-  expect(allocator.totalVoices).toBe(6);
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [0, 1, 2, 3, 4, 5],
-    active: [],
-    released: [],
-  });
-});
-
-it("should allocate up to totalVoices number of voices sequentially", () => {
+it("should intialise with a set of voices", () => {
   const allocator = new VoiceAllocator(3);
 
-  const output = [];
-  output.push(allocator.activate("a"));
-  output.push(allocator.activate("b"));
-  output.push(allocator.activate("c"));
-
-  expect(output).toEqual([0, 1, 2]);
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [],
-    active: [0, 1, 2],
-    released: [],
-  });
+  expect(allocator.voices).toEqual([undefined, undefined, undefined]);
 });
 
-it("should output same voice if same id is given multiple times", () => {
+it("should start a voice", () => {
   const allocator = new VoiceAllocator(3);
 
-  const output = [];
-  output.push(allocator.activate("a"));
-  output.push(allocator.activate("b"));
-  output.push(allocator.activate("b"));
-  output.push(allocator.activate("b"));
+  const results = [allocator.start("a")];
 
-  expect(output).toEqual([0, 1, 1, 1]);
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [2],
-    active: [0, 1],
-    released: [],
-  });
+  expect(allocator.voices).toEqual(["a", undefined, undefined]);
+  expect(results).toEqual([[0, true]]);
 });
 
-it("should allocate and release, release should free after ms", () => {
+it("should start many voices", () => {
   const allocator = new VoiceAllocator(3);
 
-  allocator.activate("a");
-  allocator.activate("b");
-  allocator.release("a", 100);
-  allocator.release("b", 200);
+  const results = [
+    allocator.start("a"),
+    allocator.start("b"),
+    allocator.start("c"),
+  ];
+
+  expect(allocator.voices).toEqual(["a", "b", "c"]);
+  expect(results).toEqual([
+    [0, true],
+    [1, true],
+    [2, true],
+  ]);
+});
+
+it("should get a voice", () => {
+  const allocator = new VoiceAllocator(3);
+
+  allocator.start("a");
+  allocator.start("b");
+  allocator.start("c");
+
+  expect(allocator.get("b")).toBe(1);
+});
+
+it("should get a voice and miss", () => {
+  const allocator = new VoiceAllocator(3);
+
+  allocator.start("a");
+  allocator.start("b");
+  allocator.start("c");
+
+  expect(allocator.get("z")).toBe(-1);
+});
+
+it("should start a voice twice with no effect", () => {
+  const allocator = new VoiceAllocator(3);
+
+  const results = [allocator.start("a"), allocator.start("a")];
+
+  expect(allocator.voices).toEqual(["a", undefined, undefined]);
+  expect(results).toEqual([
+    [0, true],
+    [0, false],
+  ]);
+});
+
+it("should stop a voice", () => {
+  const allocator = new VoiceAllocator(3);
+
+  const results = [allocator.start("a"), allocator.stop("a")];
+
+  expect(allocator.voices).toEqual([undefined, undefined, undefined]);
+  expect(results).toEqual([
+    [0, true],
+    [0, false],
+  ]);
+});
+
+it("should start too many voices, stealing the oldest", () => {
+  const allocator = new VoiceAllocator(3);
+
+  const results = [
+    allocator.start("a"),
+    allocator.start("b"),
+    allocator.start("c"),
+    allocator.start("d"),
+  ];
+
+  expect(allocator.voices).toEqual(["d", "b", "c"]);
+  expect(results).toEqual([
+    [0, true],
+    [1, true],
+    [2, true],
+    [0, true],
+  ]);
+});
+
+it("should release a voice", () => {
+  const allocator = new VoiceAllocator(3);
+
+  const results = [allocator.start("a"), allocator.release("a", 100)];
+
+  expect(allocator.voices).toEqual(["a", undefined, undefined]);
+  expect(results).toEqual([
+    [0, true],
+    [0, false],
+  ]);
 
   jest.advanceTimersByTime(50);
-
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [2],
-    active: [],
-    released: [0, 1],
-  });
+  expect(allocator.voices).toEqual(["a", undefined, undefined]);
 
   jest.advanceTimersByTime(100);
-
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [2, 0],
-    active: [],
-    released: [1],
-  });
-
-  jest.advanceTimersByTime(100);
-
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [2, 0, 1],
-    active: [],
-    released: [],
-  });
+  expect(allocator.voices).toEqual([undefined, undefined, undefined]);
 });
 
-it("should allocate and release and NOT free if same id is reactivated before being made free", () => {
-  const allocator = new VoiceAllocator(1);
-
-  allocator.activate("a");
-  allocator.release("a", 100);
-
-  jest.advanceTimersByTime(50);
-
-  allocator.activate("a");
-
-  jest.advanceTimersByTime(100);
-
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [],
-    active: [0],
-    released: [],
-  });
-});
-
-it("should allocate and release and NOT free if same id is reactivated and released before being made free", () => {
-  const allocator = new VoiceAllocator(1);
-
-  allocator.activate("a");
-  allocator.release("a", 100);
-
-  jest.advanceTimersByTime(50);
-
-  allocator.activate("a");
-  allocator.release("a", 1000);
-
-  jest.advanceTimersByTime(100);
-
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [],
-    active: [],
-    released: [0],
-  });
-});
-
-it("should allocate free voices sequentially even with releases", () => {
+it("should reclaim a released voice", () => {
   const allocator = new VoiceAllocator(3);
 
-  const output = [];
-  output.push(allocator.activate("a"));
-  output.push(allocator.activate("b"));
-  allocator.release("b", 100);
-  allocator.release("a", 100);
-  output.push(allocator.activate("c"));
+  const results = [
+    allocator.start("a"),
+    allocator.start("b"),
+    allocator.start("c"),
+    allocator.release("b", 100),
+    allocator.start("b"),
+  ];
 
-  expect(output).toEqual([0, 1, 2]);
-  expect(getVoiceCounts(allocator)).toEqual({
-    free: [],
-    active: [2],
-    released: [1, 0],
-  });
+  expect(allocator.voices).toEqual(["a", "b", "c"]);
+  expect(results).toEqual([
+    [0, true],
+    [1, true],
+    [2, true],
+    [1, false],
+    [1, false],
+  ]);
+
+  jest.advanceTimersByTime(150);
+  expect(allocator.voices).toEqual(["a", "b", "c"]);
 });
 
-it("should reuse oldest released notes before resorting to reusing active notes", () => {
+it("should reuse a different released voice", () => {
   const allocator = new VoiceAllocator(3);
 
-  const output = [];
-  output.push(allocator.activate("a")); // take free voice 0
-  output.push(allocator.activate("b")); // take free voice 1
-  allocator.release("b", 100);
-  allocator.release("a", 100);
-  output.push(allocator.activate("c")); // take free voice 2
-  output.push(allocator.activate("d")); // take released voice 1
-  output.push(allocator.activate("e")); // take released voice 0
-  output.push(allocator.activate("f")); // take active voice 2
-  expect(output).toEqual([0, 1, 2, 1, 0, 2]);
-});
+  const results = [
+    allocator.start("a"),
+    allocator.start("b"),
+    allocator.start("c"),
+    allocator.release("b", 100),
+    allocator.start("d"),
+  ];
 
-it("should reuse the first pressed notes voice if too many voices allocated", () => {
-  const allocator = new VoiceAllocator(3);
+  expect(allocator.voices).toEqual(["a", "d", "c"]);
+  expect(results).toEqual([
+    [0, true],
+    [1, true],
+    [2, true],
+    [1, false],
+    [1, true],
+  ]);
 
-  const output = [];
-  output.push(allocator.activate("a"));
-  output.push(allocator.activate("b"));
-  output.push(allocator.activate("c"));
-  output.push(allocator.activate("d"));
-  output.push(allocator.activate("e"));
-  output.push(allocator.activate("f"));
-  output.push(allocator.activate("g"));
-  expect(output).toEqual([0, 1, 2, 0, 1, 2, 0]);
-});
-
-it("should cancel all allocated and released voices if total voices is changed", () => {
-  const allocator = new VoiceAllocator(3);
-
-  allocator.activate("a");
-  allocator.activate("b");
-  allocator.release("a", 100);
-
-  expect(allocator.freeVoices.length).toBe(1);
-  expect(allocator.activeVoices.length).toBe(1);
-  expect(allocator.releasedVoices.length).toBe(1);
-
-  allocator.totalVoices = 4;
-
-  expect(allocator.freeVoices.length).toBe(4);
-  expect(allocator.activeVoices.length).toBe(0);
-  expect(allocator.releasedVoices.length).toBe(0);
+  jest.advanceTimersByTime(150);
+  expect(allocator.voices).toEqual(["a", "d", "c"]);
 });

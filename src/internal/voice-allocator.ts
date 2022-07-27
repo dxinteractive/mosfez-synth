@@ -1,98 +1,120 @@
+type VoiceIndex = number;
+type VoiceIsNew = boolean;
+type Result = [VoiceIndex, VoiceIsNew];
+type Voice = {
+  id: string;
+  voice: number;
+  time: number;
+  released?: ReturnType<typeof setTimeout>;
+};
+
+function findOldestVoiceIndex(voices: (Voice | undefined)[]): number {
+  if (voices.length === 0) return -1;
+  const oldest = voices.reduce((prev, current) => {
+    const usePrev = !current || (prev && prev.time < current.time);
+    return usePrev ? prev : current;
+  });
+  return oldest?.voice ?? -1;
+}
+
 export class VoiceAllocator {
-  private _totalVoices = 0;
+  private _time = 0;
+  private _voices: (Voice | undefined)[] = [];
 
-  // voices are either free, active, or released
-  // new items are always pushed, so the oldest item in an array is always at index 0
-
-  // voice number / id / timeoutId
-  private _freeVoices: number[] = [];
-  private _activeVoices: [number, string][] = [];
-  private _releasedVoices: [number, string, NodeJS.Timeout][] = [];
-
-  constructor(totalVoices: number) {
-    this.totalVoices = totalVoices;
+  constructor(total: number) {
+    this._voices.length = total;
   }
 
-  get totalVoices(): number {
-    return this._totalVoices;
-  }
-
-  set totalVoices(total: number) {
-    this._totalVoices = total;
-    this._freeVoices = [];
-    this._activeVoices = [];
-    this._releasedVoices = [];
-    for (let i = 0; i < total; i++) {
-      this._freeVoices.push(i);
+  private _startVoice(voice: number, id: string) {
+    const existing = this._voices[voice];
+    if (existing?.released !== undefined) {
+      clearTimeout(existing.released);
     }
+    this._voices[voice] = {
+      id,
+      voice,
+      time: this._time++,
+    };
+    return voice;
   }
 
-  get freeVoices(): number[] {
-    return this._freeVoices;
+  private _stopVoice(voice: number) {
+    this._voices[voice] = undefined;
   }
 
-  get activeVoices(): [number, string][] {
-    return this._activeVoices;
+  private _findStarted(id: string) {
+    return this._voices.findIndex(
+      (v) => v && v.id === id && v.released === undefined
+    );
   }
 
-  get releasedVoices(): [number, string, NodeJS.Timeout][] {
-    return this._releasedVoices;
+  private _findReleased(id: string) {
+    return this._voices.findIndex(
+      (v) => v && v.id === id && v.released !== undefined
+    );
   }
 
-  activate(id: string): number {
-    // if voice is already active, do nothing and return voice number
-    const ownVoice = this._activeVoices.find((v) => v[1] === id);
-    if (ownVoice) {
-      const [voice] = ownVoice;
-      return voice;
-    }
+  get voices(): (undefined | string)[] {
+    return this._voices.map((voice) => voice?.id);
+  }
 
-    // else, if a voice is free, make it active and return voice number
-    const freeVoice = this._freeVoices.shift();
-    if (freeVoice !== undefined) {
-      this._activeVoices.push([freeVoice, id]);
-      return freeVoice;
+  get(id: string): number {
+    return this._voices.findIndex((v) => v && v.id === id);
+  }
+
+  start(id: string): Result {
+    // if this voice is already started, return it
+    const started = this._findStarted(id);
+    if (started !== -1) {
+      return [started, false];
     }
 
-    // else, if a voice is released, reuse it and return voice number
-    const oldestReleased = this._releasedVoices.shift();
-    if (oldestReleased !== undefined) {
-      const [voice, , timeoutId] = oldestReleased;
-      clearTimeout(timeoutId);
-      this._activeVoices.push([voice, id]);
-      return voice;
+    // else, if this voice is currently released, start it again and return it
+    const released = this._findReleased(id);
+    if (released !== -1) {
+      return [this._startVoice(released, id), false];
     }
 
-    // else, reuse the oldest active voice and return voice number
-    const oldestActive = this._activeVoices.shift();
-    if (oldestActive !== undefined) {
-      const [voice] = oldestActive;
-      this._activeVoices.push([voice, id]);
-      return voice;
+    // else, if there is a stopped voice voice, start it and return it
+    const stopped = this._voices.findIndex((v) => !v);
+    if (stopped !== -1) {
+      return [this._startVoice(stopped, id), true];
     }
 
-    throw new Error(`Could not find active voice to reuse`);
+    // else, if there are any released notes, find the oldest, start it and return it
+    const releasedVoices = this._voices.filter(
+      (v) => v?.released !== undefined
+    );
+    const oldestReleased = findOldestVoiceIndex(releasedVoices);
+    if (oldestReleased !== -1) {
+      return [this._startVoice(oldestReleased, id), true];
+    }
+
+    // else, if there are any active notes, find the oldest, start it and return it
+    const oldestActive = findOldestVoiceIndex(this._voices);
+    if (oldestActive !== -1) {
+      return [this._startVoice(oldestActive, id), true];
+    }
+
+    throw new Error("unable to find oldest active voice");
   }
 
-  release(id: string, ms: number): number {
-    // move a voice from active to released if it exists
-    // and start a timer until it is freed
-    const voiceIndex = this._activeVoices.findIndex((v) => v[1] === id);
-    if (voiceIndex === -1) return -1;
-    const voice = this._activeVoices[voiceIndex];
-    this._activeVoices.splice(voiceIndex, 1);
-    const timeoutId = setTimeout(() => this.free(id), ms);
-    this._releasedVoices.push([...voice, timeoutId]);
-    return voice[0];
+  stop(id: string): Result {
+    const started = this._findStarted(id);
+    if (started !== -1) {
+      this._stopVoice(started);
+    }
+    return [started, false];
   }
 
-  private free(id: string) {
-    console.log("free voice", id);
-    // move a voice from released to free
-    const voiceIndex = this._releasedVoices.findIndex((v) => v[1] === id);
-    if (voiceIndex === -1) return;
-    const [voice] = this._releasedVoices[voiceIndex];
-    this._releasedVoices.splice(voiceIndex, 1);
-    this._freeVoices.push(voice);
+  release(id: string, ms: number): Result {
+    const started = this._findStarted(id);
+    const voiceObject = this._voices[started];
+    if (voiceObject) {
+      voiceObject.released = setTimeout(() => {
+        this._stopVoice(started);
+      }, ms);
+    }
+    return [started, false];
   }
 }
