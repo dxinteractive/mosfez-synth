@@ -33,6 +33,7 @@ export type SurfaceNoteEvent = {
   id: string;
   decimalMidi: number;
   force: number;
+  cell: [number, number];
 };
 
 export type SurfaceProps = {
@@ -92,6 +93,7 @@ export function Surface(props: SurfaceProps) {
         id,
         force,
         decimalMidi,
+        cell: [Math.round(x), Math.round(y)],
       });
     },
     [onSurfaceNoteEvent]

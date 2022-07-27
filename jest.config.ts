@@ -6,5 +6,6 @@ export default async (): Promise<Config.InitialOptions> => {
     testEnvironment: "node",
     testPathIgnorePatterns: ["/node_modules/", "/demo/"],
     modulePathIgnorePatterns: ["/demo/"],
+    collectCoverage: true,
   };
 };

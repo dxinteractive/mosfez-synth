@@ -28,7 +28,7 @@
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build && cp dist/* .",
     "postpublish": "yarn clean-up-build",
-    "clean-up-build": "rm -f v0.* touch-start.* synth.* faust.* types.*"
+    "clean-up-build": "rm -f touch-start.* synth.* faust.* types.* poly.*"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
@@ -49,11 +49,11 @@
   },
   "sideEffects": false,
   "files": [
-    "v0.*",
     "touch-start.*",
     "synth.*",
     "faust.*",
     "types.*",
+    "poly.*",
     "public"
   ],
   "dependencies": {

@@ -6,24 +6,23 @@ export type SynthConfig<P> = {
   params?: Partial<P>;
 };
 
-export class Synth<P extends ParamValueObject = ParamValueObject> {
-  audioContext: AudioContext;
-  paramState: Partial<P>;
+export class Synth<P extends ParamValueObject> {
+  private audioContext: AudioContext;
+  private initialParams?: Partial<P>;
 
-  node?: DspAudioNode<P>;
-  connection?: [AudioNode, number?, number?];
+  private node?: DspAudioNode<P>;
+  private connection?: [AudioNode, number?, number?];
 
   constructor(config: SynthConfig<P>) {
     this.audioContext = config.audioContext;
-    this.paramState = config.params ?? {};
+    this.initialParams = config.params;
   }
 
-  async build(dspNode: DspNode) {
+  async build(dspNode: DspNode<P>) {
     const newNode = await constructNode<P>(this.audioContext, dspNode);
     this.node?.disconnect();
     this.node?.destroy();
     this.node = newNode;
-    this.tryUpdateParams();
     this.tryConnectNode();
   }
 
@@ -37,6 +36,9 @@ export class Synth<P extends ParamValueObject = ParamValueObject> {
     if (this.node && this.connection) {
       this.node.disconnect();
       this.node.connect(...this.connection);
+      if (this.initialParams) {
+        this.set(this.initialParams);
+      }
     }
   }
 
@@ -53,16 +55,8 @@ export class Synth<P extends ParamValueObject = ParamValueObject> {
   }
 
   set(params: Partial<P>) {
-    this.paramState = {
-      ...this.paramState,
-      ...params,
-    };
-    this.tryUpdateParams();
-  }
-
-  private tryUpdateParams() {
     if (this.node) {
-      this.node.set(this.paramState);
+      this.node.set(params);
     }
   }
 }
