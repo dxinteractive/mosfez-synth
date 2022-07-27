@@ -6,19 +6,19 @@ export type SynthConfig<P> = {
   params?: Partial<P>;
 };
 
-export class Synth<P extends ParamValueObject = ParamValueObject> {
-  audioContext: AudioContext;
-  paramState: Partial<P>;
+export class Synth<P extends ParamValueObject> {
+  private audioContext: AudioContext;
+  private paramState: Partial<P>;
 
-  node?: DspAudioNode<P>;
-  connection?: [AudioNode, number?, number?];
+  private node?: DspAudioNode<P>;
+  private connection?: [AudioNode, number?, number?];
 
   constructor(config: SynthConfig<P>) {
     this.audioContext = config.audioContext;
     this.paramState = config.params ?? {};
   }
 
-  async build(dspNode: DspNode) {
+  async build(dspNode: DspNode<P>) {
     const newNode = await constructNode<P>(this.audioContext, dspNode);
     this.node?.disconnect();
     this.node?.destroy();
