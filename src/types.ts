@@ -1,7 +1,9 @@
 import type { compile as Compile } from "mosfez-faust/faust";
 import type { VoiceController } from "./internal/voice-controller";
 
-export type ParamValueObject = Record<string, number | string>;
+export type ParamValue = number | string;
+
+export type ParamValueObject = Record<string, ParamValue>;
 
 export type ParamDefinition = number | string;
 
