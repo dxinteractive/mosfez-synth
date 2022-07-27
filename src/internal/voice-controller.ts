@@ -36,8 +36,6 @@ export class VoiceController<P extends ParamValueObject> {
     set.delete(id);
     set.add(id);
 
-    console.log("before", set);
-
     while (set.size > this._maxKeys) {
       const id = set.keys().next().value;
       set.delete(id);

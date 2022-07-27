@@ -8,10 +8,12 @@ const audioContext = new window.AudioContext();
 touchStart(audioContext);
 
 type Params = {
+  gate: number;
   voice: string;
-  force: number;
   pitch: number;
+  force: number;
   speed: number;
+  pan: number;
 };
 
 // create synth
@@ -19,47 +21,39 @@ const synth = new Synth<Params>({ audioContext });
 
 // create custom oscillator dsps
 const triangle = faust<Params>(
-  "process = os.triangle(params.pitch : si.smooth(0.9) : ba.midikey2hz);",
+  "process = os.triangle(params.pitch : si.polySmooth(params.gate, 0.999, 1) : ba.midikey2hz);",
   {
     pitch: ":pitch",
+    gate: ":gate",
   }
 );
 
 // create custom gate
-const gated = faust<Params>("process = *(params.force : si.smooth(0.99999));", {
-  inputs: [triangle],
-  force: ":force",
-});
-
-const polyphonic = poly<Params>(gated, 4);
-
-// create custom tremolo dsp
-const completeDsp = faust<Params>(
-  "process = *(os.osc(params.speed) * 0.1 + 0.8) : *(0.2);",
+const gated = faust<Params>(
+  "process = *(params.force : si.polySmooth(params.gate, 0.99995, 1));",
   {
-    inputs: [polyphonic],
-    speed: 8,
+    inputs: [triangle],
+    gate: ":gate",
+    force: ":force",
   }
 );
 
-synth.build(completeDsp);
-synth.connect(audioContext.destination);
+const tremolo = faust<Params>(
+  "process = *(os.osc(params.speed) * 0.4 + 0.5) : *(0.3);",
+  {
+    inputs: [gated],
+    speed: ":speed",
+  }
+);
 
-//
-// usage is like:
-//
-// function noteOn(pitch: number) {
-//   synth.set({
-//     pitch,
-//     force: 1
-//   });
-// }
-//
-// function noteOff() {
-//   synth.set({
-//     force: 0
-//   });
-// }
-//
+const panned = faust<Params>("process = sp.panner(params.pan);", {
+  inputs: [tremolo],
+  pan: ":pan",
+});
+
+const polyphonic = poly<Params>(panned, 8);
+
+synth.build(polyphonic);
+synth.connect(audioContext.destination);
 
 export { synth };
