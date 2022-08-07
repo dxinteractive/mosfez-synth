@@ -88,12 +88,12 @@ export type StartVoiceParams = {
 };
 
 export const startVoice = (params: StartVoiceParams) => {
-  const { voice, pitch, force = 1 } = params;
+  const { voice, pitch } = params;
   synth.set({
     voice, // make this a voice-specific set()
     gate: 1, // start the voice
+    force: 1, // set the amount of force (for force enabled devices), temporarily always set to 1
     pitch, // set the pitch in decimalMidi
-    force, // set the amount of force (for force enabled devices)
     pan: Math.random() * 0.5 + 0.25, // set an amount of pan
   });
 };
@@ -105,11 +105,11 @@ export type ChangeVoiceParams = {
 };
 
 export const changeVoice = (params: ChangeVoiceParams) => {
-  const { voice, pitch, force = 1 } = params;
+  const { voice, pitch } = params;
   synth.set({
     voice, // make this a voice-specific set()
+    force: 1, // set the amount of force (for force enabled devices), temporarily always set to 1
     pitch, // set the pitch in decimalMidi
-    force, // set the amount of force (for force enabled devices)
   });
 };
 
