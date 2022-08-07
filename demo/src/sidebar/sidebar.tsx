@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { appState } from "../data/app-state";
 import { SidebarSurfaceSettings } from "./sidebar-surface-settings";
 import { SidebarTuningSettings } from "./sidebar-tuning-settings";
+import { SidebarSynthSettings } from "./sidebar-synth-settings";
 import { Console } from "./sidebar-console";
 import { Link } from "./link";
 import { Drawer } from "./drawer";
@@ -39,6 +40,9 @@ export function Sidebar() {
       </Drawer>
       <Drawer label="Surface settings" state={sidebar.branch("surfaceOpen")}>
         <SidebarSurfaceSettings />
+      </Drawer>
+      <Drawer label="Synth settings" state={sidebar.branch("synthOpen")}>
+        <SidebarSynthSettings />
       </Drawer>
       <Drawer label="Debug console" state={sidebar.branch("consoleOpen")}>
         <Console />

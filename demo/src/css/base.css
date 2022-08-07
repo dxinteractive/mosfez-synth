@@ -142,3 +142,12 @@ input {
   padding: .3rem .6rem;
   width: 100%;
 }
+
+select {
+  background: var(--colorBack);
+  border: 1px solid var(--colorBack2);
+  color: var(--colorText);
+  display: block;
+  padding: .3rem .6rem;
+  width: 100%;
+}

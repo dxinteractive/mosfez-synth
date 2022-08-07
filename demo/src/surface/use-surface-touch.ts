@@ -10,7 +10,7 @@ export type SurfaceEvent = {
   type: SurfaceEventType;
   x: number;
   y: number;
-  id: string;
+  pointerId: string;
   force: number;
 };
 
@@ -34,7 +34,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
           type: "start",
           x,
           y,
-          id: touchToId(touch),
+          pointerId: touchToId(touch),
           force: touch.force,
         });
       }
@@ -52,7 +52,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
           type: "move",
           x,
           y,
-          id: touchToId(touch),
+          pointerId: touchToId(touch),
           force: touch.force,
         });
       }
@@ -70,7 +70,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
           type: "end",
           x,
           y,
-          id: touchToId(touch),
+          pointerId: touchToId(touch),
           force: touch.force,
         });
       }
@@ -90,7 +90,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
         type: "start",
         x,
         y,
-        id: "mouse",
+        pointerId: "mouse",
         force: 1,
       });
     };
@@ -106,7 +106,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
         type: "move",
         x,
         y,
-        id: "mouse",
+        pointerId: "mouse",
         force: 1,
       });
     };
@@ -121,7 +121,7 @@ export function useSurfaceTouch(onSurfaceEvent: (e: SurfaceEvent) => void) {
           type: "end",
           x,
           y,
-          id: "mouse",
+          pointerId: "mouse",
           force: 1,
         });
       }

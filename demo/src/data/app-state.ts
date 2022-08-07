@@ -12,6 +12,7 @@ export type SidebarState = {
   open: boolean;
   tuningOpen: boolean;
   surfaceOpen: boolean;
+  synthOpen: boolean;
   consoleOpen: boolean;
 };
 
@@ -20,10 +21,17 @@ export type TuningState = {
   scaleSize: number;
 };
 
+export type SynthPolyMode = "per-cell" | "per-pointer" | "per-pitch";
+
+export type SynthState = {
+  polyMode: SynthPolyMode;
+};
+
 export type AppState = {
   surface: SurfaceState;
   sidebar: SidebarState;
   tuning: TuningState;
+  synth: SynthState;
 };
 
 const stateFromStorage: AppState = JSON.parse(
@@ -42,11 +50,15 @@ export const defaultState: AppState = {
     open: false,
     tuningOpen: true,
     surfaceOpen: true,
+    synthOpen: true,
     consoleOpen: false,
   },
   tuning: {
     rootHz: 440,
     scaleSize: 12,
+  },
+  synth: {
+    polyMode: "per-cell",
   },
 };
 
@@ -64,6 +76,10 @@ export const appState = new Dendriform<AppState>({
   tuning: {
     ...defaultState.tuning,
     ...(stateFromStorage.tuning ?? {}),
+  },
+  synth: {
+    ...defaultState.synth,
+    ...(stateFromStorage.synth ?? {}),
   },
 });
 
