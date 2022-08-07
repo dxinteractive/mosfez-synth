@@ -30,7 +30,7 @@ function mod(n: number, m: number) {
 
 export type SurfaceNoteEvent = {
   type: SurfaceEventType;
-  id: string;
+  pointerId: string;
   decimalMidi: number;
   force: number;
   cell: [number, number];
@@ -57,7 +57,7 @@ export function Surface(props: SurfaceProps) {
       if (!onSurfaceNoteEvent) return;
 
       // transform surface event into world space
-      const { type, id, force = 1 } = e;
+      const { type, pointerId, force = 1 } = e;
       const coord = [e.x, e.y] as Vec2;
       const [x, y] = screenToWorld(
         surfaceRef.current,
@@ -90,7 +90,7 @@ export function Surface(props: SurfaceProps) {
       // send event up
       onSurfaceNoteEvent({
         type,
-        id,
+        pointerId,
         force,
         decimalMidi,
         cell: [Math.round(x), Math.round(y)],
