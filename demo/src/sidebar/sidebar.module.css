@@ -5,6 +5,7 @@
   height: 100vh;
   background-color: var(--colorBack2);
   border-left: 1px solid var(--colorBack);
+  overflow: auto;
 }
 
 .open {
