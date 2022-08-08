@@ -73,11 +73,11 @@ synth.connect(audioContext.destination);
 //
 
 // randomly set the tremolo speed on everything every 2 seconds
-setInterval(() => {
-  synth.set({
-    speed: Math.random() * 10 + 1,
-  });
-}, 2000);
+// setInterval(() => {
+//   synth.set({
+//     speed: Math.random() * 10 + 1,
+//   });
+// }, 2000);
 
 // expose some example functions for voice control in a keyboard-like context
 
@@ -95,6 +95,7 @@ export const startVoice = (params: StartVoiceParams) => {
     force: 1, // set the amount of force (for force enabled devices), temporarily always set to 1
     pitch, // set the pitch in decimalMidi
     pan: Math.random() * 0.5 + 0.25, // set an amount of pan
+    speed: Math.random() * 10 + 1, // set a tremolo speed
   });
 };
 
