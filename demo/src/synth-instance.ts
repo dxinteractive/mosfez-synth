@@ -20,36 +20,61 @@ type Params = {
   voice: string;
   pitch: number;
   force: number;
+  volume: number;
   speed: number;
   pan: number;
+  envelopeAttack: number;
+  envelopeDecay: number;
+  envelopeSustain: number;
+  envelopeRelease: number;
 };
 
 // create synth
-const synth = new Synth<Params>({ audioContext });
+const synth = new Synth<Params>({
+  audioContext,
+  params: {
+    pitch: 440,
+    envelopeAttack: 0.002,
+    envelopeDecay: 0.1,
+    envelopeSustain: 0.3,
+    envelopeRelease: 1,
+  },
+});
 
 // create custom oscillator dsp
 const triangle = faust<Params>(
-  "process = os.triangle(params.pitch : si.polySmooth(params.gate, 0.999, 1) : ba.midikey2hz);",
+  "process = os.triangle(params.pitch : si.polySmooth(params.gate, 0.999, 1) : ba.midikey2hz) : *(params.volume);",
   {
     pitch: ":pitch",
     gate: ":gate",
+    volume: 0.3,
   }
 );
 
-// create custom gate
-const gated = faust<Params>(
-  "process = *(params.force : si.polySmooth(params.gate, 0.99995, 1));",
+// create envelope
+const enveloped = faust<Params>(
+  `
+a = params.envelopeAttack;
+d = params.envelopeDecay;
+s = params.envelopeSustain;
+r = params.envelopeRelease;
+process = *(en.adsr(a,d,s,r,params.gate));
+`,
   {
     inputs: [triangle],
     gate: ":gate",
     force: ":force",
+    envelopeAttack: ":envelopeAttack",
+    envelopeDecay: ":envelopeDecay",
+    envelopeSustain: ":envelopeSustain",
+    envelopeRelease: ":envelopeRelease",
   }
 );
 
 const tremolo = faust<Params>(
-  "process = *(os.osc(params.speed) * 0.4 + 0.5) : *(0.3);",
+  "process = *(os.osc(params.speed) * 0.4 + 0.5);",
   {
-    inputs: [gated],
+    inputs: [enveloped],
     speed: ":speed",
   }
 );
@@ -72,10 +97,12 @@ synth.connect(audioContext.destination);
 // at runtime
 //
 
-// randomly set the tremolo speed on everything every 2 seconds
+// randomly set the release speed on everything every 2 seconds
 // setInterval(() => {
+//   const envelopeRelease = Math.random();
+//   console.log("envelopeRelease:", envelopeRelease);
 //   synth.set({
-//     speed: Math.random() * 10 + 1,
+//     envelopeRelease,
 //   });
 // }, 2000);
 
