@@ -2663,10 +2663,10 @@ minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   dependencies:
     brace-expansion "^1.1.7"
 
-mosfez-faust@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/mosfez-faust/-/mosfez-faust-0.0.10.tgz#5ebcbb20653567f1227ba6b0954e56c61f64e354"
-  integrity sha512-ys96i7Es8j/N6sxuN+RccfSIDlnhzz7xXUSIp7zBAqbmEjPBuI01TVYzgw4g7jOoQTOkSkoZIVajQbL4vq6aOA==
+mosfez-faust@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/mosfez-faust/-/mosfez-faust-0.0.11.tgz#1346c1b16afa71eabf89145cb86f2c6452887644"
+  integrity sha512-bBVrziQQasoFkIbjaBliW48AmvDnaQ8FX1k2qxqt/JwY5LGeEIGoFhTx0J9fOAPy62UtT26UQHk2dKiJEKYF7Q==
   dependencies:
     audiobuffer-to-wav "^1.0.0"
 
