@@ -21,14 +21,14 @@
     "node": ">=16"
   },
   "scripts": {
-    "prep": "yarn && yarn clean-up-build && cd demo && yarn",
+    "prep": "yarn && yarn clean && cd demo && yarn",
     "build": "rm -rf dist && yarn rollup -c",
     "test": "yarn jest",
     "lint": "yarn eslint src",
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build && cp dist/* .",
-    "postpublish": "yarn clean-up-build",
-    "clean-up-build": "rm -f touch-start.* synth.* faust.* types.* poly.*"
+    "postpublish": "yarn clean",
+    "clean": "rm -f touch-start.* synth.* faust.* types.* poly.*"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
@@ -57,6 +57,6 @@
     "public"
   ],
   "dependencies": {
-    "mosfez-faust": "^0.0.10"
+    "mosfez-faust": "^0.0.11"
   }
 }
