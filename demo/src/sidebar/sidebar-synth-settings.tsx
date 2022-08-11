@@ -21,14 +21,9 @@ export function SidebarSynthSettings() {
       More synth options will be added soon.
       <br />
       <br />
-      Right now we have a triangle with infinitely fast attack and long release
-      (and bad clicking on note start), with up to 8 voices, each voice randomly
-      panned on note start, through a tremolo effect that changes speed
-      occasionally.
-      <br />
-      <br />
-      We also have a couple of faust compilation problems, and some sub-par
-      behaviour with force controls on iPhones.
+      Right now we have a triangle with fast attack and slow release, with up to
+      8 voices, each voice randomly panned and passed through a tremolo effect
+      on note start.
     </div>
   );
 }
