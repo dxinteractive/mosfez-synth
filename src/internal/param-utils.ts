@@ -6,39 +6,41 @@ import {
 
 export function validateParamDefinition(
   name: string,
-  value: ParamDefinition
+  paramDef: ParamDefinition
 ): ParamDefinition {
-  if (!isConstant(value) && !isVariable(value)) {
+  if (!isConstant(paramDef) && !isVariable(paramDef)) {
     throw new Error(
-      `param "${name}" must be a constant number or a string referring to a param name, but got ${value}`
+      `param "${name}" must be a constant number or a string referring to a param name, but got ${paramDef}`
     );
   }
-  return value;
+  return paramDef;
 }
 
 export function validateParamDefinitionObject(
-  params: ParamDefinitionObject
+  paramDefs: ParamDefinitionObject
 ): ParamDefinitionObject {
-  for (const name in params) {
-    validateParamDefinition(name, params[name] as ParamDefinition);
+  for (const name in paramDefs) {
+    validateParamDefinition(name, paramDefs[name] as ParamDefinition);
   }
-  return params;
+  return paramDefs;
 }
 
-export function isConstant(value: ParamDefinition): value is number {
-  return typeof value === "number";
+export function isConstant(paramDef: ParamDefinition): paramDef is number {
+  return typeof paramDef === "number";
 }
 
-export function isVariable(value: ParamDefinition): value is string {
-  return typeof value === "string";
+export function isVariable(paramDef: ParamDefinition): paramDef is string {
+  return typeof paramDef === "string";
 }
 
 export function resolveParam(
   params: Partial<ParamValueObject>,
-  value: ParamDefinition
-): number {
-  if (isConstant(value)) {
-    return value;
+  paramDef: ParamDefinition
+): number | undefined {
+  if (isConstant(paramDef)) {
+    return paramDef;
+  } else if (isVariable(paramDef)) {
+    return params[paramDef] as number;
   }
-  return params[value] as number;
+  return undefined;
 }

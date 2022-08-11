@@ -30,7 +30,7 @@ export type DspNodeFaust = {
   type: "faust";
   dsp: string;
   inputs?: DspNode[];
-  params: ParamDefinitionObject;
+  paramDefs: ParamDefinitionObject;
   dependencies: {
     compile: typeof Compile;
   };

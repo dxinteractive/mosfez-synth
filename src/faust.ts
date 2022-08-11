@@ -8,14 +8,14 @@ import { validateParamDefinitionObject } from "./internal/param-utils";
 
 export function faust(
   dsp: string,
-  params: FaustParamDefinitionObject
+  paramDefs: FaustParamDefinitionObject
 ): DspNodeFaust {
-  const { inputs, ...rest } = params;
+  const { inputs, ...rest } = paramDefs;
   return {
     type: "faust",
     dsp,
     inputs,
-    params: validateParamDefinitionObject(rest as ParamDefinitionObject),
+    paramDefs: validateParamDefinitionObject(rest as ParamDefinitionObject),
     dependencies: {
       compile,
     },
