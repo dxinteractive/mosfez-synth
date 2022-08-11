@@ -1,32 +1,43 @@
 import { DspNodePoly, DspAudioNode, ParamValueObject } from "../types";
 
 import type { ConstructNode } from "./construct-node";
+import { isVariable, resolveParam } from "./param-utils";
 
 export async function constructNodePoly<P extends ParamValueObject>(
   audioContext: AudioContext,
-  dspNode: DspNodePoly<P>,
+  dspNode: DspNodePoly,
   constructNode: ConstructNode<P>
 ): Promise<DspAudioNode<P>> {
-  const { voice, polyphony, dependencies } = dspNode;
+  const {
+    input,
+    polyphony,
+    paramCacheSize = 10000,
+    release,
+    gate,
+    dependencies,
+  } = dspNode;
+  const releaseIsVariable = isVariable(release);
 
   // create a voice bank
   const { VoiceController } = dependencies;
   const controller = new VoiceController({
-    totalVoices: polyphony,
-    maxKeys: 10000,
+    polyphony,
+    resolveGate: (params) => resolveParam(params, gate),
+    paramCacheSize,
   });
 
-  // catch non-voice-specific params in state
-  // let nonVoiceParams: Partial<P> = {};
+  // set release if it's constant
+  const setRelease = (r: number) => controller.setRelease(r * 1000);
 
-  // create a map to hold per-voice state
-  // const voiceParamsMap = new LRUMap<string, Partial<P>>(999);
+  if (!releaseIsVariable) {
+    setRelease(release);
+  }
 
   // construct polyphony number of voices
   const voiceNodes = await Promise.all(
     Array(polyphony)
       .fill(0)
-      .map(() => constructNode(audioContext, voice))
+      .map(() => constructNode(audioContext, input))
   );
 
   // make a gain node and connect all voices to it
@@ -40,7 +51,18 @@ export async function constructNodePoly<P extends ParamValueObject>(
 
   // cascade any calls to set, filtered down to particular voices if required
   gainNode.set = (params: Partial<P>) => {
+    // set release if it is passed through here
+    if (releaseIsVariable) {
+      const value = params[release];
+      if (typeof value === "number") {
+        setRelease(value);
+      }
+    }
+
+    // pass params through the controller
     const paramsToSet = controller.set(params);
+
+    // send the results to child nodes
     paramsToSet.forEach(({ index, params }) => {
       voiceNodes[index].set(params as Partial<P>);
     });

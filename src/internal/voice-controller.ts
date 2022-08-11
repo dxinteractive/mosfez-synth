@@ -1,9 +1,14 @@
 import { VoiceAllocator } from "./voice-allocator";
 import type { ParamValueObject, ParamValue } from "../types";
 
-export type VoiceControllerConfig = {
-  totalVoices: number;
-  maxKeys: number;
+export type ResolveGate<P extends ParamValueObject> = (
+  p: Partial<P>
+) => number | undefined;
+
+export type VoiceControllerConfig<P extends ParamValueObject> = {
+  polyphony: number;
+  resolveGate: ResolveGate<P>;
+  paramCacheSize: number;
 };
 
 export type VoiceParam<P extends ParamValueObject> = {
@@ -12,10 +17,10 @@ export type VoiceParam<P extends ParamValueObject> = {
 };
 
 export class VoiceController<P extends ParamValueObject> {
-  private _totalVoices: number;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  private _maxKeys: number;
+  private _polyphony: number;
+  private _resolveGate: ResolveGate<P>;
+  private _release = 2000;
+  private _paramCacheSize: number;
   private _allocator: VoiceAllocator;
   private _allParams: Partial<P> = {};
   private _perVoiceParamsStore = new Map<
@@ -24,11 +29,12 @@ export class VoiceController<P extends ParamValueObject> {
   >();
   private _recentlyAccessedIds = new Set<string>();
 
-  constructor(config: VoiceControllerConfig) {
-    const { totalVoices, maxKeys } = config;
-    this._totalVoices = totalVoices;
-    this._maxKeys = maxKeys;
-    this._allocator = new VoiceAllocator(totalVoices);
+  constructor(config: VoiceControllerConfig<P>) {
+    const { polyphony, paramCacheSize, resolveGate } = config;
+    this._polyphony = polyphony;
+    this._paramCacheSize = paramCacheSize;
+    this._resolveGate = resolveGate;
+    this._allocator = new VoiceAllocator(polyphony);
   }
 
   private _accessId(id: string) {
@@ -36,7 +42,7 @@ export class VoiceController<P extends ParamValueObject> {
     set.delete(id);
     set.add(id);
 
-    while (set.size > this._maxKeys) {
+    while (set.size > this._paramCacheSize) {
       const id = set.keys().next().value;
       set.delete(id);
       this._deleteParamsForId(id);
@@ -89,6 +95,10 @@ export class VoiceController<P extends ParamValueObject> {
     });
   }
 
+  setRelease(release: number) {
+    this._release = release;
+  }
+
   set({ voice, ...params }: Partial<P>): VoiceParam<P>[] {
     if (voice === undefined) {
       return this.setAll(params as Partial<P>);
@@ -97,14 +107,15 @@ export class VoiceController<P extends ParamValueObject> {
   }
 
   private setWithId(id: string, params: Partial<P>): VoiceParam<P>[] {
-    const { gate } = params;
+    const gate = this._resolveGate(params);
     const { _allocator, _allParams } = this;
 
     // register note event with voice allocator
     // and receive voice index
     let index = -1;
     if (gate !== undefined) {
-      [index] = gate > 0 ? _allocator.start(id) : _allocator.release(id, 2000); // TODO change this
+      [index] =
+        gate > 0 ? _allocator.start(id) : _allocator.release(id, this._release);
     } else {
       index = _allocator.get(id);
     }
@@ -145,7 +156,7 @@ export class VoiceController<P extends ParamValueObject> {
 
     // return these params for every voice
     const out: VoiceParam<P>[] = [];
-    for (let i = 0; i < this._totalVoices; i++) {
+    for (let i = 0; i < this._polyphony; i++) {
       out.push({
         index: i,
         params,

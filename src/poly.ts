@@ -1,14 +1,16 @@
 import { VoiceController } from "./internal/voice-controller";
-import type { DspNode, ParamValueObject } from "./types";
+import type { DspNodePoly, PolyParamDefinitionObject } from "./types";
+import { validateParamDefinition } from "./internal/param-utils";
 
-export function poly<P extends ParamValueObject>(
-  voice: DspNode<P>,
-  polyphony: number
-): DspNode<P> {
+export function poly(params: PolyParamDefinitionObject): DspNodePoly {
+  const { input, polyphony, paramCacheSize, release, gate } = params;
   return {
     type: "poly",
-    voice,
+    input,
     polyphony,
+    paramCacheSize,
+    release: validateParamDefinition("release", release),
+    gate: validateParamDefinition("gate", gate),
     dependencies: {
       VoiceController,
     },

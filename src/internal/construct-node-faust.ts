@@ -3,13 +3,14 @@ import { DspNodeFaust, DspAudioNode, ParamValueObject } from "../types";
 import type { ConstructNode } from "./construct-node";
 
 import { series, env, lines } from "./faust-dsp-utils";
+import { resolveParam } from "./param-utils";
 
 export async function constructNodeFaust<P extends ParamValueObject>(
   audioContext: AudioContext,
-  dspNode: DspNodeFaust<P>,
+  dspNode: DspNodeFaust,
   constructNode: ConstructNode<P>
 ): Promise<DspAudioNode<P>> {
-  const { inputs = [], dependencies } = dspNode;
+  const { inputs = [], paramDefs, dependencies } = dspNode;
 
   // build input nodes
   const inputNodes = await Promise.all(
@@ -22,7 +23,6 @@ export async function constructNodeFaust<P extends ParamValueObject>(
     constructFaustDsp(dspNode),
   ]);
 
-  console.log("dsp to compile:", dspToCompile);
   const faustNode = await dependencies.compile(audioContext, dspToCompile);
   const faustNodeDestroy = faustNode.destroy;
   const node = faustNode as unknown as DspAudioNode<P>;
@@ -40,9 +40,12 @@ export async function constructNodeFaust<P extends ParamValueObject>(
   node.set = (params: Partial<P>) => {
     paramsUsed.forEach((name) => {
       const paramKey = name.replace(/^\/FaustDSP\//g, "");
-      const value = params[paramKey];
-      if (typeof value === "number") {
-        faustNode.setParamValue(name, value);
+      const paramDef = paramDefs[paramKey];
+      if (paramDef !== undefined) {
+        const value = resolveParam(params, paramDef);
+        if (typeof value === "number") {
+          faustNode.setParamValue(name, value);
+        }
       }
     });
 
@@ -59,10 +62,8 @@ export async function constructNodeFaust<P extends ParamValueObject>(
   return node;
 }
 
-function constructFaustDsp<P extends ParamValueObject>(
-  dspNode: DspNodeFaust<P>
-): string {
-  const { params, dsp } = dspNode;
+function constructFaustDsp(dspNode: DspNodeFaust): string {
+  const { paramDefs, dsp } = dspNode;
 
   // todo - use this when squashing faust nodes together
   // inputs
@@ -79,19 +80,11 @@ function constructFaustDsp<P extends ParamValueObject>(
   const paramsDsp = env(
     "params",
     lines([
-      series(Object.entries(params), "\n", ([name, value]) => {
+      series(Object.entries(paramDefs), "\n", ([name, value]) => {
         if (typeof value === "number") {
           return `${name} = ${value};\n`;
         }
-
-        if (typeof value === "string" && value[0] === ":") {
-          const sliced = name.slice(0);
-          return `${sliced} = hslider("${sliced}",0.0,-9999999.0,9999999.0,0.0000001);`;
-        }
-
-        throw new Error(
-          `param "${name}" must be a number or a string beginning with ":"`
-        );
+        return `${name} = hslider("${name}",0.0,-9999999.0,9999999.0,0.0000001);`;
       }),
       // `changed(x) = x != x';`,
       // `reset = hslider("reset",0.0,0.0,9999999.0,1.0) : changed;`,

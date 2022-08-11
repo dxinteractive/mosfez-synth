@@ -18,7 +18,7 @@ export class Synth<P extends ParamValueObject> {
     this.initialParams = config.params;
   }
 
-  async build(dspNode: DspNode<P>) {
+  async build(dspNode: DspNode) {
     const newNode = await constructNode<P>(this.audioContext, dspNode);
     this.node?.disconnect();
     this.node?.destroy();

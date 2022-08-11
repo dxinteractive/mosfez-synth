@@ -1,5 +1,7 @@
 import { VoiceController } from "./voice-controller";
 
+const resolveGate = (params: Partial<Params>) => params.gate;
+
 type Params = {
   voice: string;
   foo: number;
@@ -10,8 +12,9 @@ type Params = {
 
 it("should allow params to be set on all voices", () => {
   const controller = new VoiceController<Params>({
-    totalVoices: 3,
-    maxKeys: 1000,
+    polyphony: 3,
+    resolveGate,
+    paramCacheSize: 1000,
   });
 
   const params = {};
@@ -36,8 +39,9 @@ it("should allow params to be set on all voices", () => {
 
 it("should only send new on all voices", () => {
   const controller = new VoiceController<Params>({
-    totalVoices: 3,
-    maxKeys: 1000,
+    polyphony: 3,
+    resolveGate,
+    paramCacheSize: 1000,
   });
 
   controller.set({
@@ -68,8 +72,9 @@ it("should only send new on all voices", () => {
 
 it("should allow params to be set on a single voice", () => {
   const controller = new VoiceController<Params>({
-    totalVoices: 3,
-    maxKeys: 1000,
+    polyphony: 3,
+    resolveGate,
+    paramCacheSize: 1000,
   });
 
   controller.set({
@@ -97,8 +102,9 @@ it("should allow params to be set on a single voice", () => {
 
 it("should allow params to be set again on a single voice", () => {
   const controller = new VoiceController<Params>({
-    totalVoices: 3,
-    maxKeys: 1000,
+    polyphony: 3,
+    resolveGate,
+    paramCacheSize: 1000,
   });
 
   controller.set({
@@ -132,8 +138,9 @@ it("should allow params to be set again on a single voice", () => {
 
 it("should allow an all-voice param to be set over a per-voice params", () => {
   const controller = new VoiceController<Params>({
-    totalVoices: 3,
-    maxKeys: 1000,
+    polyphony: 3,
+    resolveGate,
+    paramCacheSize: 1000,
   });
 
   controller.set({
@@ -194,8 +201,9 @@ it("should allow an all-voice param to be set over a per-voice params", () => {
 
 it("should control many voices", () => {
   const controller = new VoiceController<Params>({
-    totalVoices: 3,
-    maxKeys: 1000,
+    polyphony: 3,
+    resolveGate,
+    paramCacheSize: 1000,
   });
 
   controller.set({
@@ -259,8 +267,9 @@ it("should control many voices", () => {
 
 it("should limit the number of voice params", () => {
   const controller = new VoiceController<Params>({
-    totalVoices: 10,
-    maxKeys: 3,
+    polyphony: 10,
+    resolveGate,
+    paramCacheSize: 3,
   });
 
   const results = [
