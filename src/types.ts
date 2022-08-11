@@ -2,49 +2,59 @@ import type { compile as Compile } from "mosfez-faust/faust";
 import type { VoiceController } from "./internal/voice-controller";
 
 export type ParamValue = number | string;
+// should just be number, but voice is part of the same object
+// which must be a string and typescript currently cant do
+// rest types that differ from explicit child types
 
 export type ParamValueObject = Record<string, ParamValue>;
 
 export type ParamDefinition = number | string;
 
-export type ParamDefinitionObject<P extends ParamValueObject> = Partial<
-  Record<keyof P, string | number>
-> & {
-  inputs?: DspNode<P>[];
+export type ParamDefinitionObject = Record<string, ParamDefinition>;
+
+export type FaustParamDefinitionObject = {
+  inputs?: DspNode[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 };
 
-export type DspNodeFaust<P extends ParamValueObject> = {
+export type PolyParamDefinitionObject = {
+  input: DspNode;
+  polyphony: number;
+  paramCacheSize?: number;
+  release: ParamDefinition;
+  gate: ParamDefinition;
+};
+
+export type DspNodeFaust = {
   type: "faust";
   dsp: string;
-  inputs?: DspNode<P>[];
-  params: Partial<ParamDefinitionObject<P>>;
+  inputs?: DspNode[];
+  params: ParamDefinitionObject;
   dependencies: {
     compile: typeof Compile;
   };
 };
 
-export type DspNodePoly<P extends ParamValueObject> = {
+export type DspNodePoly = {
   type: "poly";
-  voice: DspNode<P>;
+  input: DspNode;
   polyphony: number;
+  paramCacheSize?: number;
+  release: ParamDefinition;
+  gate: ParamDefinition;
   dependencies: {
     VoiceController: typeof VoiceController;
   };
 };
 
-export type DspNode<P extends ParamValueObject> =
-  | DspNodeFaust<P>
-  | DspNodePoly<P>;
+export type DspNode = DspNodeFaust | DspNodePoly;
 
-export function isFaustDspNode<P extends ParamValueObject>(
-  DspNode: DspNode<P>
-): DspNode is DspNodeFaust<P> {
+export function isFaustDspNode(DspNode: DspNode): DspNode is DspNodeFaust {
   return DspNode.type === "faust";
 }
 
-export function isPolyDspNode<P extends ParamValueObject>(
-  DspNode: DspNode<P>
-): DspNode is DspNodePoly<P> {
+export function isPolyDspNode(DspNode: DspNode): DspNode is DspNodePoly {
   return DspNode.type === "poly";
 }
 

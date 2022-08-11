@@ -27,6 +27,7 @@ type Params = {
   envelopeDecay: number;
   envelopeSustain: number;
   envelopeRelease: number;
+  reverbMix: number;
 };
 
 // create synth
@@ -42,17 +43,17 @@ const synth = new Synth<Params>({
 });
 
 // create custom oscillator dsp
-const triangle = faust<Params>(
+const triangle = faust(
   "process = os.triangle(params.pitch : si.polySmooth(params.gate, 0.999, 1) : ba.midikey2hz) : *(params.volume);",
   {
-    pitch: ":pitch",
-    gate: ":gate",
+    pitch: "pitch",
+    gate: "gate",
     volume: 0.3,
   }
 );
 
 // create envelope
-const enveloped = faust<Params>(
+const enveloped = faust(
   `
 a = params.envelopeAttack;
 d = params.envelopeDecay;
@@ -62,33 +63,47 @@ process = *(en.adsr(a,d,s,r,params.gate));
 `,
   {
     inputs: [triangle],
-    gate: ":gate",
-    force: ":force",
-    envelopeAttack: ":envelopeAttack",
-    envelopeDecay: ":envelopeDecay",
-    envelopeSustain: ":envelopeSustain",
-    envelopeRelease: ":envelopeRelease",
+    gate: "gate",
+    force: "force",
+    envelopeAttack: "envelopeAttack",
+    envelopeDecay: "envelopeDecay",
+    envelopeSustain: "envelopeSustain",
+    envelopeRelease: "envelopeRelease",
   }
 );
 
-const tremolo = faust<Params>(
-  "process = *(os.osc(params.speed) * 0.4 + 0.5);",
-  {
-    inputs: [enveloped],
-    speed: ":speed",
-  }
-);
+const tremolo = faust("process = *(os.osc(params.speed) * 0.4 + 0.5);", {
+  inputs: [enveloped],
+  speed: "speed",
+});
 
-const panned = faust<Params>("process = sp.panner(params.pan);", {
+const panned = faust("process = sp.panner(params.pan);", {
   inputs: [tremolo],
-  pan: ":pan",
+  pan: "pan",
 });
 
 // WARNING: poly API will change
-const polyphonic = poly<Params>(panned, 8);
+const polyphonic = poly({
+  input: panned,
+  polyphony: 8,
+  gate: "gate",
+  release: 2000, // "envelopeRelease",
+});
+
+const reverbed = faust(
+  `
+  reverb = re.stereo_freeverb(0.5, 0.5, 0.2, 1.0);
+  stereo_mix(wet, mix, x, y) = wet(x, y) : sp.stereoize(*(mix)) : _+(x * (1.0 - mix)),_+(y * (1.0 - mix));
+  process = stereo_mix(reverb, params.reverbMix);
+  `,
+  {
+    inputs: [polyphonic],
+    reverbMix: 0.1,
+  }
+);
 
 // build node graph into the synth
-synth.build(polyphonic);
+synth.build(reverbed);
 
 // connect the synth to the audio out on the users machine
 synth.connect(audioContext.destination);

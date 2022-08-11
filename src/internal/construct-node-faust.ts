@@ -6,7 +6,7 @@ import { series, env, lines } from "./faust-dsp-utils";
 
 export async function constructNodeFaust<P extends ParamValueObject>(
   audioContext: AudioContext,
-  dspNode: DspNodeFaust<P>,
+  dspNode: DspNodeFaust,
   constructNode: ConstructNode<P>
 ): Promise<DspAudioNode<P>> {
   const { inputs = [], dependencies } = dspNode;
@@ -59,9 +59,7 @@ export async function constructNodeFaust<P extends ParamValueObject>(
   return node;
 }
 
-function constructFaustDsp<P extends ParamValueObject>(
-  dspNode: DspNodeFaust<P>
-): string {
+function constructFaustDsp(dspNode: DspNodeFaust): string {
   const { params, dsp } = dspNode;
 
   // todo - use this when squashing faust nodes together
@@ -83,15 +81,7 @@ function constructFaustDsp<P extends ParamValueObject>(
         if (typeof value === "number") {
           return `${name} = ${value};\n`;
         }
-
-        if (typeof value === "string" && value[0] === ":") {
-          const sliced = name.slice(0);
-          return `${sliced} = hslider("${sliced}",0.0,-9999999.0,9999999.0,0.0000001);`;
-        }
-
-        throw new Error(
-          `param "${name}" must be a number or a string beginning with ":"`
-        );
+        return `${name} = hslider("${name}",0.0,-9999999.0,9999999.0,0.0000001);`;
       }),
       // `changed(x) = x != x';`,
       // `reset = hslider("reset",0.0,0.0,9999999.0,1.0) : changed;`,
