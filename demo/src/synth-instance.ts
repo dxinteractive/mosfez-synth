@@ -34,7 +34,7 @@ type Params = {
 const synth = new Synth<Params>({
   audioContext,
   params: {
-    pitch: 440,
+    pitch: 70,
     envelopeAttack: 0.002,
     envelopeDecay: 0.1,
     envelopeSustain: 0.3,
