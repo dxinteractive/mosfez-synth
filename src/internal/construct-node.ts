@@ -10,12 +10,12 @@ import { constructNodeFaust } from "./construct-node-faust";
 import { constructNodePoly } from "./construct-node-poly";
 
 export type ConstructNode<P extends ParamValueObject> = (
-  audioContext: AudioContext,
+  audioContext: AudioContext | OfflineAudioContext,
   dspNode: DspNode
 ) => Promise<DspAudioNode<P>>;
 
 export async function constructNode<P extends ParamValueObject>(
-  audioContext: AudioContext,
+  audioContext: AudioContext | OfflineAudioContext,
   dspNode: DspNode
 ): Promise<DspAudioNode<P>> {
   if (isFaustDspNode(dspNode)) {

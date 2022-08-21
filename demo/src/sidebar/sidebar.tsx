@@ -9,7 +9,12 @@ import { Console } from "./sidebar-console";
 import { Link } from "./link";
 import { Drawer } from "./drawer";
 
-export function Sidebar() {
+type SidebarProps = {
+  handleOfflineRenderTest: () => void;
+};
+
+export function Sidebar(props: SidebarProps) {
+  const { handleOfflineRenderTest } = props;
   const sidebar = appState.branch("sidebar");
   const sidebarOpen = sidebar.branch("open").useValue();
 
@@ -48,9 +53,14 @@ export function Sidebar() {
         <Console />
       </Drawer>
       <div className={classes.repo}>
-        <Link href="https://github.com/dxinteractive/mosfez-synth">
-          github repo
-        </Link>
+        <div>
+          <Link href="https://github.com/dxinteractive/mosfez-synth">
+            github repo
+          </Link>
+        </div>
+        <div>
+          <Link onClick={handleOfflineRenderTest}>offline render test</Link>
+        </div>
       </div>
     </div>
   );

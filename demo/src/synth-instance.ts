@@ -2,18 +2,11 @@ import { faust } from "mosfez-synth/faust";
 import { poly } from "mosfez-synth/poly";
 import { Synth } from "mosfez-synth/synth";
 import { touchStart } from "mosfez-synth/touch-start";
+import { DspNode } from "mosfez-synth/types";
 
 // synth-instance.ts
 // sets up an instance of mosfez-synth,
 // and allow its to be controlled via some callbacks
-
-//
-// at initialise
-//
-
-// create audio context and start it on first user iteraction
-const audioContext = new window.AudioContext();
-touchStart(audioContext);
 
 type Params = {
   gate: number;
@@ -30,82 +23,101 @@ type Params = {
   // reverbMix: number;
 };
 
-// create synth
-const synth = new Synth<Params>({
-  audioContext,
-  params: {
-    pitch: 70,
-    envelopeAttack: 0.002,
-    envelopeDecay: 0.1,
-    envelopeSustain: 0.3,
-    envelopeRelease: 2,
-  },
-});
+//
+// at initialise
+// define a synth-creating functions
+//
 
-// create custom oscillator dsp
-const triangle = faust(
-  "process = os.triangle(params.pitch : si.polySmooth(params.gate, 0.999, 1) : ba.midikey2hz) : *(params.volume);",
-  {
-    pitch: "pitch",
+export function buildSynthNodes(): DspNode {
+  // create custom oscillator dsp
+  const triangle = faust(
+    "process = os.triangle(params.pitch : si.polySmooth(params.gate, 0.999, 1) : ba.midikey2hz) : *(params.volume);",
+    {
+      pitch: "pitch",
+      gate: "gate",
+      volume: 0.3,
+    }
+  );
+
+  // create envelope
+  const enveloped = faust(
+    `
+  a = params.envelopeAttack;
+  d = params.envelopeDecay;
+  s = params.envelopeSustain;
+  r = params.envelopeRelease;
+  process = *(en.adsr(a,d,s,r,params.gate));
+  `,
+    {
+      inputs: [triangle],
+      gate: "gate",
+      force: "force",
+      envelopeAttack: "envelopeAttack",
+      envelopeDecay: "envelopeDecay",
+      envelopeSustain: "envelopeSustain",
+      envelopeRelease: "envelopeRelease",
+    }
+  );
+
+  const tremolo = faust("process = *(os.osc(params.speed) * 0.4 + 0.5);", {
+    inputs: [enveloped],
+    speed: "speed",
+  });
+
+  const panned = faust("process = sp.panner(params.pan);", {
+    inputs: [tremolo],
+    pan: "pan",
+  });
+
+  const polyphonic = poly({
+    input: panned,
+    polyphony: 8,
     gate: "gate",
-    volume: 0.3,
-  }
-);
+    release: "envelopeRelease",
+  });
 
-// create envelope
-const enveloped = faust(
-  `
-a = params.envelopeAttack;
-d = params.envelopeDecay;
-s = params.envelopeSustain;
-r = params.envelopeRelease;
-process = *(en.adsr(a,d,s,r,params.gate));
-`,
-  {
-    inputs: [triangle],
-    gate: "gate",
-    force: "force",
-    envelopeAttack: "envelopeAttack",
-    envelopeDecay: "envelopeDecay",
-    envelopeSustain: "envelopeSustain",
-    envelopeRelease: "envelopeRelease",
-  }
-);
+  // const reverbed = faust(
+  //   `
+  //   reverb = re.stereo_freeverb(0.5, 0.5, 0.2, 1.0);
+  //   stereo_mix(wet, mix, x, y) = wet(x, y) : sp.stereoize(*(mix)) : _+(x * (1.0 - mix)),_+(y * (1.0 - mix));
+  //   process = stereo_mix(reverb, params.reverbMix);
+  //   `,
+  //   {
+  //     inputs: [polyphonic],
+  //     reverbMix: 0.1,
+  //   }
+  // );
 
-const tremolo = faust("process = *(os.osc(params.speed) * 0.4 + 0.5);", {
-  inputs: [enveloped],
-  speed: "speed",
-});
+  return polyphonic;
+}
 
-const panned = faust("process = sp.panner(params.pan);", {
-  inputs: [tremolo],
-  pan: "pan",
-});
+export function createSynthWithContext(
+  audioContext: AudioContext | OfflineAudioContext
+): Synth<Params> {
+  return new Synth<Params>({
+    audioContext,
+    params: {
+      pitch: 70,
+      envelopeAttack: 0.002,
+      envelopeDecay: 0.1,
+      envelopeSustain: 0.3,
+      envelopeRelease: 2,
+    },
+  });
+}
 
-const polyphonic = poly({
-  input: panned,
-  polyphony: 8,
-  gate: "gate",
-  release: "envelopeRelease",
-});
+// create audio context and start it on first user iteraction
+export const liveAudioContext = new window.AudioContext();
+touchStart(liveAudioContext);
 
-// const reverbed = faust(
-//   `
-//   reverb = re.stereo_freeverb(0.5, 0.5, 0.2, 1.0);
-//   stereo_mix(wet, mix, x, y) = wet(x, y) : sp.stereoize(*(mix)) : _+(x * (1.0 - mix)),_+(y * (1.0 - mix));
-//   process = stereo_mix(reverb, params.reverbMix);
-//   `,
-//   {
-//     inputs: [polyphonic],
-//     reverbMix: 0.1,
-//   }
-// );
+// create synth with live audio context
+const synth = createSynthWithContext(liveAudioContext);
 
 // build node graph into the synth
-synth.build(polyphonic);
+synth.build(buildSynthNodes());
 
 // connect the synth to the audio out on the users machine
-synth.connect(audioContext.destination);
+synth.connect(liveAudioContext.destination);
 
 //
 // at runtime

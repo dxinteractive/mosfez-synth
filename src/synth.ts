@@ -2,12 +2,12 @@ import { constructNode } from "./internal/construct-node";
 import type { DspNode, DspAudioNode, ParamValueObject } from "./types";
 
 export type SynthConfig<P> = {
-  audioContext: AudioContext;
+  audioContext: AudioContext | OfflineAudioContext;
   params?: Partial<P>;
 };
 
 export class Synth<P extends ParamValueObject> {
-  private audioContext: AudioContext;
+  private audioContext: AudioContext | OfflineAudioContext;
   private initialParams?: Partial<P>;
 
   private node?: DspAudioNode<P>;
