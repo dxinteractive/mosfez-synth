@@ -4,7 +4,7 @@ import type { ConstructNode } from "./construct-node";
 import { isVariable, resolveParam } from "./param-utils";
 
 export async function constructNodePoly<P extends ParamValueObject>(
-  audioContext: AudioContext,
+  audioContext: AudioContext | OfflineAudioContext,
   dspNode: DspNodePoly,
   constructNode: ConstructNode<P>
 ): Promise<DspAudioNode<P>> {

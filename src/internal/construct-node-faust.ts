@@ -6,7 +6,7 @@ import { series, env, lines } from "./faust-dsp-utils";
 import { resolveParam } from "./param-utils";
 
 export async function constructNodeFaust<P extends ParamValueObject>(
-  audioContext: AudioContext,
+  audioContext: AudioContext | OfflineAudioContext,
   dspNode: DspNodeFaust,
   constructNode: ConstructNode<P>
 ): Promise<DspAudioNode<P>> {
