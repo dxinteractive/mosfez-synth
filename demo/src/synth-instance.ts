@@ -102,6 +102,7 @@ export function createSynthWithContext(
       envelopeDecay: 0.1,
       envelopeSustain: 0.3,
       envelopeRelease: 2,
+      pan: 0.5,
     },
   });
 }
