@@ -57,6 +57,6 @@
     "public"
   ],
   "dependencies": {
-    "mosfez-faust": "^0.0.12"
+    "mosfez-faust": "0.0.13"
   }
 }
