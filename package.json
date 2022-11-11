@@ -28,7 +28,7 @@
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build && cp dist/* .",
     "postpublish": "yarn clean",
-    "clean": "rm -f touch-start.* synth.* faust.* types.* poly.*"
+    "clean": "rm -f touch-start.* synth.* faust.* types.* poly.* offline-render.* offline-render-inner.stringify.*"
   },
   "devDependencies": {
     "@types/jest": "^27.5.1",
@@ -41,8 +41,10 @@
     "jest": "^28.1.0",
     "prettier": "2.6.2",
     "rollup": "^2.75.3",
+    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-dts": "^4.2.2",
     "rollup-plugin-esbuild": "^4.9.1",
+    "rollup-plugin-string": "^3.0.0",
     "ts-jest": "^28.0.3",
     "ts-node": "^10.8.0",
     "typescript": "^4.7.2"
@@ -54,9 +56,11 @@
     "faust.*",
     "types.*",
     "poly.*",
+    "offline-render.*",
+    "offline-render-inner.stringify.*",
     "public"
   ],
   "dependencies": {
-    "mosfez-faust": "0.0.13"
+    "mosfez-faust": "0.0.16"
   }
 }

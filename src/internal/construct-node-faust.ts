@@ -24,7 +24,7 @@ export async function constructNodeFaust<P extends ParamValueObject>(
   ]);
 
   const faustNode = await dependencies.compile(audioContext, dspToCompile);
-  const faustNodeDestroy = faustNode.destroy;
+  const faustNodeDestroy = faustNode.destroy.bind(faustNode);
   const node = faustNode as unknown as DspAudioNode<P>;
 
   // execute and cascade any calls to destroy

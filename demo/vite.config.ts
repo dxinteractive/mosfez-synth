@@ -6,6 +6,10 @@ import path from "path";
 export default defineConfig({
   resolve: {
     alias: {
+      "mosfez-synth/offline-render": path.resolve(
+        __dirname,
+        "../dist/offline-render.mjs"
+      ),
       "mosfez-synth": path.resolve(__dirname, "../src"),
     },
   },

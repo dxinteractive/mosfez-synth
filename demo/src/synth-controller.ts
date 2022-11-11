@@ -3,6 +3,7 @@ import {
   changeVoice,
   stopVoice,
   stopAllVoices,
+  destroySynth,
 } from "./synth-instance";
 import { appState, SynthPolyMode } from "./data/app-state";
 import { SurfaceNoteEvent } from "./surface/surface";
@@ -100,4 +101,8 @@ const handlers: Record<SynthPolyMode, (e: SurfaceNoteEvent) => void> = {
 
 export const handleSurfaceEvent = (e: SurfaceNoteEvent) => {
   handlers[synthState.value.polyMode](e);
+};
+
+export const handleDestroy = () => {
+  destroySynth();
 };

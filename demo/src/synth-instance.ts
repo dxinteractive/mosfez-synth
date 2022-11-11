@@ -123,16 +123,6 @@ synth.connect(liveAudioContext.destination);
 //
 // at runtime
 //
-
-// randomly set the release speed on everything every 2 seconds
-// setInterval(() => {
-//   const envelopeRelease = Math.random();
-//   console.log("envelopeRelease:", envelopeRelease);
-//   synth.set({
-//     envelopeRelease,
-//   });
-// }, 2000);
-
 // expose some example functions for voice control in a keyboard-like context
 
 export type StartVoiceParams = {
@@ -187,4 +177,9 @@ export const stopAllVoices = () => {
     gate: 0, // turn the note off
     force: 0, // set the amount of force (for force enabled devices)
   });
+};
+
+export const destroySynth = () => {
+  synth.disconnect(liveAudioContext.destination);
+  synth.destroy();
 };

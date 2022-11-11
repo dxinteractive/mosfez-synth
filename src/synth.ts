@@ -59,4 +59,9 @@ export class Synth<P extends ParamValueObject> {
       this.node.set(params);
     }
   }
+
+  destroy() {
+    this.node?.destroy();
+    this.node = undefined;
+  }
 }
