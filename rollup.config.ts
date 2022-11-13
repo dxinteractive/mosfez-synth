@@ -1,7 +1,6 @@
 import dts from "rollup-plugin-dts";
 import esbuild from "rollup-plugin-esbuild";
 import { string } from "rollup-plugin-string";
-import copy from "rollup-plugin-copy";
 
 const entrypoints = [
   "touch-start",
@@ -13,9 +12,9 @@ const entrypoints = [
   "offline-render",
 ];
 
-export default entrypoints.flatMap((name, index) => {
+export default entrypoints.flatMap((name) => {
   const common = {
-    input: `src/${name}.ts`,
+    input: `./src/${name}.ts`,
     external: (id) => !/^[./]/.test(id),
   };
 
@@ -26,25 +25,17 @@ export default entrypoints.flatMap((name, index) => {
     }),
   ];
 
-  if (index === 0) {
-    plugins.push(
-      copy({
-        targets: [{ src: "node_modules/mosfez-faust", dest: "dist" }],
-      })
-    );
-  }
-
   return [
     {
       plugins,
       output: [
         {
-          file: `dist/${name}.js`,
+          file: `./dist/${name}.js`,
           format: "cjs",
           sourcemap: true,
         },
         {
-          file: `dist/${name}.mjs`,
+          file: `./dist/${name}.mjs`,
           format: "es",
           sourcemap: true,
         },

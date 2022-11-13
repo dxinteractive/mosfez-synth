@@ -22,15 +22,17 @@
   },
   "scripts": {
     "prep": "yarn && yarn clean && cd demo && yarn",
-    "build": "rm -rf dist && yarn rollup -c",
+    "build": "rm -rf dist && yarn bundle-deps && yarn rollup -c",
     "test": "yarn jest",
     "lint": "yarn eslint src",
     "pretty": "yarn prettier --write .",
     "prepare": "yarn build && cp dist/* .",
     "postpublish": "yarn clean",
+    "bundle-deps": "node scripts/bundle-deps.node.js",
     "clean": "rm -f touch-start.* synth.* faust.* types.* poly.* offline-render.* offline-render-inner.stringify.*"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^23.0.2",
     "@types/jest": "^27.5.1",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
@@ -41,7 +43,6 @@
     "jest": "^28.1.0",
     "prettier": "2.6.2",
     "rollup": "^2.75.3",
-    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-dts": "^4.2.2",
     "rollup-plugin-esbuild": "^4.9.1",
     "rollup-plugin-string": "^3.0.0",
@@ -61,6 +62,6 @@
     "public"
   ],
   "dependencies": {
-    "mosfez-faust": "0.0.16"
+    "mosfez-faust": "0.0.18"
   }
 }
