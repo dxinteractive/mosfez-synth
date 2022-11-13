@@ -2733,10 +2733,10 @@ minimatch@^5.0.1:
   dependencies:
     brace-expansion "^2.0.1"
 
-mosfez-faust@0.0.18:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/mosfez-faust/-/mosfez-faust-0.0.18.tgz#730bc7dd2a9c9007ce1c37482ff8d7b9b073205c"
-  integrity sha512-7p8fJSoD442SE0zOy9QwBKKv5gN3/TwlauATERDTR4AtctBoAogCEC4+C714XM3oe4nV8S0rYnbWBZdL6RJBLA==
+mosfez-faust@0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/mosfez-faust/-/mosfez-faust-0.0.19.tgz#7b5bddabe70ffe77e456a85ea62789ba934d78c9"
+  integrity sha512-7faLas9ywA5ccWi/RSoKdiSihGz+ipuHdOXaDg3KlfuwiO82yl79aFk0garWZs15qtPOYB5Rf57X5wQO0BZkbg==
 
 ms@2.1.2:
   version "2.1.2"

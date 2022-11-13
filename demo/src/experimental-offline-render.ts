@@ -23,7 +23,7 @@ import { offlineRenderDsp } from "mosfez-synth/offline-render";
 export async function experimentalOfflineRender() {
   const channels = 2;
   // const length = 2;
-  const sampleRate = 96000;
+  const sampleRate = 48000;
   // const offlineContext = new OfflineAudioContext(
   //   channels,
   //   sampleRate * length,
