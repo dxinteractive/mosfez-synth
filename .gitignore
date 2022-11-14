@@ -105,3 +105,12 @@ dist
 
 # MacOS artifacts
 .DS_Store
+
+bundled-deps/
+touch-start.*
+synth.*
+faust.*
+types.*
+poly.*
+offline-render.*
+offline-render-inner.stringify.*
