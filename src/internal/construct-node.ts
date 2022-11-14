@@ -1,13 +1,12 @@
-import {
-  DspNode,
-  isFaustDspNode,
-  isPolyDspNode,
-  DspAudioNode,
-  ParamValueObject,
-} from "../types";
-
+import { ParamValueObject } from "../params";
+import { DspNode } from "../dsp-node";
 import { constructNodeFaust } from "./construct-node-faust";
 import { constructNodePoly } from "./construct-node-poly";
+
+export type DspAudioNode<P extends ParamValueObject> = AudioNode & {
+  set: (params: Partial<P>) => void;
+  destroy: () => void;
+};
 
 export type ConstructNode<P extends ParamValueObject> = (
   audioContext: AudioContext | OfflineAudioContext,
@@ -18,12 +17,11 @@ export async function constructNode<P extends ParamValueObject>(
   audioContext: AudioContext | OfflineAudioContext,
   dspNode: DspNode
 ): Promise<DspAudioNode<P>> {
-  if (isFaustDspNode(dspNode)) {
+  if (DspNode.isFaustDspNode(dspNode)) {
     return await constructNodeFaust<P>(audioContext, dspNode, constructNode);
   }
-  if (isPolyDspNode(dspNode)) {
+  if (DspNode.isPolyDspNode(dspNode)) {
     return await constructNodePoly<P>(audioContext, dspNode, constructNode);
   }
-  // @ts-expect-error - types do not allow this path yet
   throw new Error(`dspNode has invalid type "${dspNode.type}"`);
 }

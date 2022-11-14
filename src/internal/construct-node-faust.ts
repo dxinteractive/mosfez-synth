@@ -1,6 +1,7 @@
-import { DspNodeFaust, DspAudioNode, ParamValueObject } from "../types";
+import type { ParamValueObject } from "../params";
+import type { DspNodeFaust } from "../faust";
 
-import type { ConstructNode } from "./construct-node";
+import type { ConstructNode, DspAudioNode } from "./construct-node";
 
 import { series, env, lines } from "./faust-dsp-utils";
 import { resolveParam } from "./param-utils";

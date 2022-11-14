@@ -5,10 +5,11 @@ import { string } from "rollup-plugin-string";
 const entrypoints = [
   "touch-start",
   "synth",
+  "dsp-node",
   "faust",
-  "types",
+  "params",
   "poly",
-  "offline-render-inner.stringify",
+  "offline-render-synth-inner.stringify",
   "offline-render",
 ];
 

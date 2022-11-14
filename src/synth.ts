@@ -1,5 +1,6 @@
-import { constructNode } from "./internal/construct-node";
-import type { DspNode, DspAudioNode, ParamValueObject } from "./types";
+import { constructNode, DspAudioNode } from "./internal/construct-node";
+import type { DspNode } from "./dsp-node";
+import type { ParamValueObject } from "./params";
 
 export type SynthConfig<P> = {
   audioContext: AudioContext | OfflineAudioContext;

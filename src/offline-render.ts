@@ -1,27 +1,35 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import offlineRenderDspInnerStringified from "../dist/offline-render-inner.stringify.js";
+import offlineRenderSynthInnerStringified from "../dist/offline-render-synth-inner.stringify.js";
 import {
-  offlineRender,
+  offlineRender as offlineRenderContext,
   OfflineRenderParams,
 } from "mosfez-faust/offline-render";
+import type { ParamValueObject } from "./params";
+import { DspNode } from "./dsp-node";
 
-export type OfflineRenderDspParams = Omit<
+export type OfflineRenderSynthParams<P> = Omit<
   OfflineRenderParams,
   "functionString"
 > & {
-  dsp: string;
+  initialParams: Partial<P>;
+  dspNode: DspNode;
 };
 
-export async function offlineRenderDsp(params: OfflineRenderDspParams) {
-  const { dsp, ...rest } = params;
-  return offlineRender({
+export async function offlineRender<P extends ParamValueObject>(
+  params: OfflineRenderSynthParams<P>
+) {
+  const { initialParams, dspNode, ...rest } = params;
+  const dspNodeSerialized = dspNode.serialize();
+
+  return offlineRenderContext({
     functionString: `
-      ${offlineRenderDspInnerStringified}
-      exports.buildContext = exports.offlineRenderDspInner;
+      ${offlineRenderSynthInnerStringified}
+      exports.buildContext = exports.offlineRenderSynthInner;
     `,
     props: {
-      dsp,
+      initialParams,
+      dspNodeSerialized,
     },
     ...rest,
   });
