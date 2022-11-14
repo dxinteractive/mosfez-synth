@@ -105,3 +105,5 @@ dist
 
 # MacOS artifacts
 .DS_Store
+
+bundled-deps/

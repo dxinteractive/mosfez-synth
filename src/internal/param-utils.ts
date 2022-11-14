@@ -1,8 +1,5 @@
-import {
-  ParamDefinition,
-  ParamDefinitionObject,
-  ParamValueObject,
-} from "../types";
+import { ParamValueObject } from "../params";
+import { ParamDefinitionObject, ParamDefinition } from "../dsp-node";
 
 export function validateParamDefinition(
   name: string,

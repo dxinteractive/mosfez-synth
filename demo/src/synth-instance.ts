@@ -2,7 +2,7 @@ import { faust } from "mosfez-synth/faust";
 import { poly } from "mosfez-synth/poly";
 import { Synth } from "mosfez-synth/synth";
 import { touchStart } from "mosfez-synth/touch-start";
-import { DspNode } from "mosfez-synth/types";
+import { DspNode } from "mosfez-synth/dsp-node";
 
 // synth-instance.ts
 // sets up an instance of mosfez-synth,
@@ -23,12 +23,21 @@ type Params = {
   // reverbMix: number;
 };
 
+export const initialParams = {
+  pitch: 70,
+  envelopeAttack: 0.002,
+  envelopeDecay: 0.1,
+  envelopeSustain: 0.3,
+  envelopeRelease: 2,
+  pan: 0.5,
+};
+
 //
 // at initialise
-// define a synth-creating functions
+// define synth-creating functions
 //
 
-export function buildSynthNodes(): DspNode {
+function buildSynthDsp(): DspNode {
   // create custom oscillator dsp
   const triangle = faust(
     "process = os.triangle(params.pitch : si.polySmooth(params.gate, 0.999, 1) : ba.midikey2hz) : *(params.volume);",
@@ -91,30 +100,20 @@ export function buildSynthNodes(): DspNode {
   return polyphonic;
 }
 
-export function createSynthWithContext(
-  audioContext: AudioContext | OfflineAudioContext
-): Synth<Params> {
-  return new Synth<Params>({
-    audioContext,
-    params: {
-      pitch: 70,
-      envelopeAttack: 0.002,
-      envelopeDecay: 0.1,
-      envelopeSustain: 0.3,
-      envelopeRelease: 2,
-    },
-  });
-}
+export const synthDspNode = buildSynthDsp();
 
 // create audio context and start it on first user iteraction
 export const liveAudioContext = new window.AudioContext();
 touchStart(liveAudioContext);
 
 // create synth with live audio context
-const synth = createSynthWithContext(liveAudioContext);
+const synth = new Synth<Params>({
+  audioContext: liveAudioContext,
+  params: initialParams,
+});
 
 // build node graph into the synth
-synth.build(buildSynthNodes());
+synth.build(synthDspNode);
 
 // connect the synth to the audio out on the users machine
 synth.connect(liveAudioContext.destination);
@@ -122,16 +121,6 @@ synth.connect(liveAudioContext.destination);
 //
 // at runtime
 //
-
-// randomly set the release speed on everything every 2 seconds
-// setInterval(() => {
-//   const envelopeRelease = Math.random();
-//   console.log("envelopeRelease:", envelopeRelease);
-//   synth.set({
-//     envelopeRelease,
-//   });
-// }, 2000);
-
 // expose some example functions for voice control in a keyboard-like context
 
 export type StartVoiceParams = {
@@ -186,4 +175,9 @@ export const stopAllVoices = () => {
     gate: 0, // turn the note off
     force: 0, // set the amount of force (for force enabled devices)
   });
+};
+
+export const destroySynth = () => {
+  synth.disconnect(liveAudioContext.destination);
+  synth.destroy();
 };

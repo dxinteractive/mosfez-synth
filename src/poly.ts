@@ -1,18 +1,25 @@
+import { DspNodePoly } from "./dsp-node";
+import type { ParamDefinition, DspNode } from "./dsp-node";
 import { VoiceController } from "./internal/voice-controller";
-import type { DspNodePoly, PolyParamDefinitionObject } from "./types";
-import { validateParamDefinition } from "./internal/param-utils";
+
+export type PolyParamDefinitionObject = {
+  input: DspNode;
+  polyphony: number;
+  paramCacheSize?: number;
+  release: ParamDefinition;
+  gate: ParamDefinition;
+};
 
 export function poly(params: PolyParamDefinitionObject): DspNodePoly {
   const { input, polyphony, paramCacheSize, release, gate } = params;
-  return {
-    type: "poly",
+  return new DspNodePoly({
     input,
     polyphony,
     paramCacheSize,
-    release: validateParamDefinition("release", release),
-    gate: validateParamDefinition("gate", gate),
+    release,
+    gate,
     dependencies: {
       VoiceController,
     },
-  };
+  });
 }
