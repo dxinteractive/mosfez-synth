@@ -1,6 +1,7 @@
-import { DspNodePoly, DspAudioNode, ParamValueObject } from "../types";
+import type { ParamValueObject } from "../params";
+import type { DspNodePoly } from "../poly";
 
-import type { ConstructNode } from "./construct-node";
+import type { ConstructNode, DspAudioNode } from "./construct-node";
 import { isVariable, resolveParam } from "./param-utils";
 
 export async function constructNodePoly<P extends ParamValueObject>(

@@ -10,11 +10,12 @@ import { Link } from "./link";
 import { Drawer } from "./drawer";
 
 type SidebarProps = {
+  handleDestroy: () => void;
   handleOfflineRenderTest: () => void;
 };
 
 export function Sidebar(props: SidebarProps) {
-  const { handleOfflineRenderTest } = props;
+  const { handleDestroy, handleOfflineRenderTest } = props;
   const sidebar = appState.branch("sidebar");
   const sidebarOpen = sidebar.branch("open").useValue();
 
@@ -57,6 +58,9 @@ export function Sidebar(props: SidebarProps) {
           <Link href="https://github.com/dxinteractive/mosfez-synth">
             github repo
           </Link>
+        </div>
+        <div>
+          <Link onClick={handleDestroy}>destroy</Link>
         </div>
         <div>
           <Link onClick={handleOfflineRenderTest}>offline render test</Link>

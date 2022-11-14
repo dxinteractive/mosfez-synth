@@ -1,23 +1,24 @@
+import { DspNodeFaust } from "./dsp-node";
+import type { DspNode } from "./dsp-node";
 import { compile } from "mosfez-faust/faust";
-import type {
-  DspNodeFaust,
-  FaustParamDefinitionObject,
-  ParamDefinitionObject,
-} from "./types";
-import { validateParamDefinitionObject } from "./internal/param-utils";
+
+export type FaustParamDefinitionObject = {
+  inputs?: DspNode[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+};
 
 export function faust(
   dsp: string,
   paramDefs: FaustParamDefinitionObject
 ): DspNodeFaust {
   const { inputs, ...rest } = paramDefs;
-  return {
-    type: "faust",
+  return new DspNodeFaust({
     dsp,
     inputs,
-    paramDefs: validateParamDefinitionObject(rest as ParamDefinitionObject),
+    paramDefs: rest,
     dependencies: {
       compile,
     },
-  };
+  });
 }

@@ -5,7 +5,7 @@ import classes from "./demo.module.css";
 
 import { Sidebar } from "./sidebar/sidebar";
 import { Surface } from "./surface/surface";
-import { handleSurfaceEvent } from "./synth-controller";
+import { handleSurfaceEvent, handleDestroy } from "./synth-controller";
 import { experimentalOfflineRender } from "./experimental-offline-render";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -19,7 +19,10 @@ function Demo() {
   return (
     <div className={classes.demo}>
       <Surface onSurfaceNoteEvent={handleSurfaceEvent} />
-      <Sidebar handleOfflineRenderTest={experimentalOfflineRender} />
+      <Sidebar
+        handleDestroy={handleDestroy}
+        handleOfflineRenderTest={experimentalOfflineRender}
+      />
     </div>
   );
 }

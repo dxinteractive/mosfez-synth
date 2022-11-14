@@ -1,6 +1,7 @@
-import { DspNodeFaust, DspAudioNode, ParamValueObject } from "../types";
+import type { ParamValueObject } from "../params";
+import type { DspNodeFaust } from "../faust";
 
-import type { ConstructNode } from "./construct-node";
+import type { ConstructNode, DspAudioNode } from "./construct-node";
 
 import { series, env, lines } from "./faust-dsp-utils";
 import { resolveParam } from "./param-utils";
@@ -24,7 +25,7 @@ export async function constructNodeFaust<P extends ParamValueObject>(
   ]);
 
   const faustNode = await dependencies.compile(audioContext, dspToCompile);
-  const faustNodeDestroy = faustNode.destroy;
+  const faustNodeDestroy = faustNode.destroy.bind(faustNode);
   const node = faustNode as unknown as DspAudioNode<P>;
 
   // execute and cascade any calls to destroy

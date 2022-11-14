@@ -1,5 +1,5 @@
 import { VoiceAllocator } from "./voice-allocator";
-import type { ParamValueObject, ParamValue } from "../types";
+import type { ParamValueObject, ParamValue } from "../params";
 
 export type ResolveGate<P extends ParamValueObject> = (
   p: Partial<P>
