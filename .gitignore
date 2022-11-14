@@ -113,4 +113,4 @@ faust.*
 types.*
 poly.*
 offline-render.*
-offline-render-inner.stringify.*
+offline-render-synth-inner.stringify.*

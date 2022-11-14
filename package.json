@@ -29,7 +29,7 @@
     "prepare": "yarn build && cp dist/* .",
     "postpublish": "yarn clean",
     "bundle-deps": "node scripts/bundle-deps.node.js",
-    "clean": "rm -f touch-start.* synth.* dsp-node.* faust.* params.* poly.* offline-render.* offline-render-inner.stringify.*"
+    "clean": "rm -f touch-start.* synth.* dsp-node.* faust.* params.* poly.* offline-render.* offline-render-synth-inner.stringify.*"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^23.0.2",
@@ -59,7 +59,7 @@
     "params.*",
     "poly.*",
     "offline-render.*",
-    "offline-render-inner.stringify.*",
+    "offline-render-synth-inner.stringify.*",
     "public"
   ],
   "dependencies": {
