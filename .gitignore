@@ -109,8 +109,10 @@ dist
 bundled-deps/
 touch-start.*
 synth.*
+dsp-node.*
 faust.*
 types.*
+params.*
 poly.*
 offline-render.*
 offline-render-synth-inner.stringify.*
