@@ -1,5 +1,5 @@
 import type { ParamValueObject } from "../params";
-import type { DspNodeFaust } from "../faust";
+import type { DspNodeFaust } from "../dsp-node";
 
 import type { ConstructNode, DspAudioNode } from "./construct-node";
 

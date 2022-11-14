@@ -1,5 +1,5 @@
 import type { ParamValueObject } from "../params";
-import type { DspNodePoly } from "../poly";
+import type { DspNodePoly } from "../dsp-node";
 
 import type { ConstructNode, DspAudioNode } from "./construct-node";
 import { isVariable, resolveParam } from "./param-utils";
