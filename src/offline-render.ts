@@ -4,7 +4,7 @@ import offlineRenderSynthInnerStringified from "../dist/offline-render-synth-inn
 import { offlineRender as offlineRenderContext } from "mosfez-faust/offline-render";
 import type { ParamValueObject } from "./params";
 import { DspNode } from "./dsp-node";
-import type { SequencerEvent } from "./sequencer";
+import type { InputEvent } from "./synth";
 
 export type OfflineRenderSynthParams<P> = {
   channels: number;
@@ -12,7 +12,7 @@ export type OfflineRenderSynthParams<P> = {
   length: number;
   initialParams: Partial<P>;
   dspNode: DspNode;
-  events: SequencerEvent[];
+  events: InputEvent[];
 };
 
 export async function offlineRender<P extends ParamValueObject>(

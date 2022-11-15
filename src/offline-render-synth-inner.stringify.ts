@@ -1,13 +1,12 @@
 import type { ParamValueObject } from "./params";
 import type { DspNodeSerialized } from "./dsp-node";
 import { deserializeInIframe } from "./internal/deserialize-in-iframe";
-import { Synth } from "./synth";
-import type { SequencerEvent } from "./sequencer";
+import { Synth, InputEvent, isInputSetEvent } from "./synth";
 
 type Props = {
   initialParams: Partial<ParamValueObject>;
   dspNodeSerialized: DspNodeSerialized;
-  events: SequencerEvent[];
+  events: InputEvent[];
 };
 
 export async function offlineRenderSynthInner(
@@ -30,12 +29,14 @@ export async function offlineRenderSynthInner(
   // connect the synth to the audio out on the offline context
   synth.connect(offlineCtx.destination);
 
-  // process all events
+  // process set events
   for (let i = 0; i < events.length; i++) {
-    const { time, params } = events[i];
-    offlineCtx.suspend(time).then(() => {
-      synth.set(params);
-      offlineCtx.resume();
-    });
+    const event = events[i];
+    if (isInputSetEvent(event)) {
+      offlineCtx.suspend(event.time).then(() => {
+        synth.set(event.params);
+        offlineCtx.resume();
+      });
+    }
   }
 }

@@ -107,7 +107,7 @@ export const liveAudioContext = new window.AudioContext();
 touchStart(liveAudioContext);
 
 // create synth with live audio context
-const synth = new Synth<Params>({
+export const synth = new Synth<Params>({
   audioContext: liveAudioContext,
   params: initialParams,
 });

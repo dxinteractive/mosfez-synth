@@ -11,11 +11,13 @@ import { Drawer } from "./drawer";
 
 type SidebarProps = {
   handleDestroy: () => void;
-  handleOfflineRenderTest: () => void;
+  handleRecord: () => void;
+  handleRecordStop: () => void;
+  handlePlay: () => void;
 };
 
 export function Sidebar(props: SidebarProps) {
-  const { handleDestroy, handleOfflineRenderTest } = props;
+  const { handleDestroy, handleRecord, handleRecordStop, handlePlay } = props;
   const sidebar = appState.branch("sidebar");
   const sidebarOpen = sidebar.branch("open").useValue();
 
@@ -63,7 +65,13 @@ export function Sidebar(props: SidebarProps) {
           <Link onClick={handleDestroy}>destroy</Link>
         </div>
         <div>
-          <Link onClick={handleOfflineRenderTest}>offline render test</Link>
+          <Link onClick={handleRecord}>record</Link>
+        </div>
+        <div>
+          <Link onClick={handleRecordStop}>stop</Link>
+        </div>
+        <div>
+          <Link onClick={handlePlay}>play</Link>
         </div>
       </div>
     </div>
