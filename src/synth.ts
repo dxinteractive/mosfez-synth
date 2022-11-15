@@ -2,6 +2,62 @@ import { constructNode, DspAudioNode } from "./internal/construct-node";
 import type { DspNode } from "./dsp-node";
 import type { ParamValueObject } from "./params";
 
+export type InputSetEvent = {
+  type: "set";
+  time: number;
+  params: Partial<ParamValueObject>;
+};
+
+export type InputStopEvent = {
+  type: "stop";
+  time: number;
+};
+
+export type InputEvent = InputSetEvent | InputStopEvent;
+
+export function isInputSetEvent(e: InputEvent): e is InputSetEvent {
+  return e.type === "set";
+}
+
+export function isInputStopEvent(e: InputEvent): e is InputStopEvent {
+  return e.type === "stop";
+}
+
+class InputEventRecorder<P extends ParamValueObject> {
+  public recording = false;
+  private recordingStartTime = Date.now();
+  private events: InputEvent[] = [];
+
+  record() {
+    this.recording = true;
+    this.recordingStartTime = Date.now();
+  }
+
+  stop(): InputEvent[] {
+    const time = (Date.now() - this.recordingStartTime) * 0.001;
+
+    this.events.push({
+      type: "stop",
+      time,
+    });
+
+    const result = this.events;
+    this.events = [];
+    this.recording = false;
+    return result;
+  }
+
+  addSetEvent(params: Partial<P>) {
+    const time = (Date.now() - this.recordingStartTime) * 0.001;
+
+    this.events.push({
+      type: "set",
+      time,
+      params,
+    });
+  }
+}
+
 export type SynthConfig<P> = {
   audioContext: AudioContext | OfflineAudioContext;
   params?: Partial<P>;
@@ -56,6 +112,9 @@ export class Synth<P extends ParamValueObject> {
   }
 
   set(params: Partial<P>) {
+    if (this.inputEvents.recording) {
+      this.inputEvents.addSetEvent(params);
+    }
     if (this.node) {
       this.node.set(params);
     }
@@ -65,4 +124,6 @@ export class Synth<P extends ParamValueObject> {
     this.node?.destroy();
     this.node = undefined;
   }
+
+  inputEvents = new InputEventRecorder<P>();
 }

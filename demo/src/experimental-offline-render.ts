@@ -7,62 +7,44 @@ import {
 } from "./synth-instance";
 
 import { offlineRender } from "mosfez-synth/offline-render";
+import { InputEvent, isInputStopEvent } from "mosfez-synth/synth";
 
-export async function experimentalOfflineRender() {
-  const events = [
-    {
-      time: 0.3,
-      params: {
-        voice: "a",
-        gate: 1, // start the voice
-        force: 1, // set the amount of force (for force enabled devices), temporarily always set to 1
-        pitch: 72, // set the pitch in decimalMidi
-        speed: 5,
-      },
-    },
-    {
-      time: 0.6,
-      params: {
-        voice: "b",
-        gate: 1, // start the voice
-        force: 1, // set the amount of force (for force enabled devices), temporarily always set to 1
-        pitch: 75, // set the pitch in decimalMidi
-        speed: 3,
-      },
-    },
-    {
-      time: 0.9,
-      params: {
-        voice: "c",
-        gate: 1, // start the voice
-        force: 1, // set the amount of force (for force enabled devices), temporarily always set to 1
-        pitch: 76, // set the pitch in decimalMidi
-        speed: 5,
-      },
-    },
-    {
-      time: 1.2,
-      params: {
-        voice: "d",
-        gate: 1, // start the voice
-        force: 1, // set the amount of force (for force enabled devices), temporarily always set to 1
-        pitch: 79, // set the pitch in decimalMidi
-        speed: 3,
-      },
-    },
-  ];
+let buffer: AudioBuffer | undefined;
+
+export async function experimentalOfflineRender(events: InputEvent[]) {
+  console.log("events", events);
+
+  const stopEvent = events.find(isInputStopEvent);
+  if (!stopEvent) {
+    console.log("no stop event found");
+    return;
+  }
+
+  const sampleRate = 48000;
 
   const result = await offlineRender({
     channels: 1,
-    sampleRate: 48000,
-    length: 2 * 48000,
+    sampleRate,
+    length: stopEvent.time * sampleRate,
     initialParams,
     dspNode: synthDspNode,
     events,
   });
 
+  buffer = await toAudioBuffer(result, liveAudioContext);
+}
+
+export function playLastRender() {
+  if (!buffer) {
+    console.log("no buffer to play");
+    return;
+  }
+
   const source = liveAudioContext.createBufferSource();
-  source.buffer = await toAudioBuffer(result, liveAudioContext);
+  source.buffer = buffer;
   source.connect(liveAudioContext.destination);
+  source.addEventListener("ended", () => {
+    source.disconnect(liveAudioContext.destination);
+  });
   source.start();
 }
