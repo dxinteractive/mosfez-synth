@@ -63,6 +63,6 @@
     "public"
   ],
   "dependencies": {
-    "mosfez-faust": "0.0.19"
+    "mosfez-faust": "0.0.20"
   }
 }
