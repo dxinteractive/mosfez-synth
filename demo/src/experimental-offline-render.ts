@@ -1,4 +1,5 @@
 import { toAudioBuffer } from "mosfez-faust/convert";
+import { playBuffer } from "mosfez-faust/play";
 
 import {
   initialParams,
@@ -39,12 +40,5 @@ export function playLastRender() {
     console.log("no buffer to play");
     return;
   }
-
-  const source = liveAudioContext.createBufferSource();
-  source.buffer = buffer;
-  source.connect(liveAudioContext.destination);
-  source.addEventListener("ended", () => {
-    source.disconnect(liveAudioContext.destination);
-  });
-  source.start();
+  playBuffer(buffer, liveAudioContext);
 }
